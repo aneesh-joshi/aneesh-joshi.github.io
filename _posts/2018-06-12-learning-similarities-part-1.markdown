@@ -38,7 +38,7 @@ Several Similarity Learning models exist, but considering the recent success of 
 <center>the table shows the results of my evaluation script.</center>
 
 <h3>Week 4:</h3>
-After studying the table, we agreed to implement the drmm_tks model since it gave a good score with acceptable memory and training time trade offs. After building and training the model, I have managed to get results close to those of MatchZoo. The remaining time will now be spent tuning the model, adding more models and presenting an easy interface to use.
+Currently, I have built and trained the drmm_tks model which scores a results close to those of MatchZoo. The remaining time will now be spent tuning the model parameters, adding more models and presenting an easy interface to use. Hopefully, I will be able to add evaluations on more datasets.
 
 <h3>My Thoughts and Conclusion:</h3>
 <p>The last few weeks have been intense! It has been up and down with me getting stuck on some parts and then having a sudden breakthrough. The project is definitely interesting and could be very useful for people who work in this space. I just hope I am able to keep an acceptable pace and do it justice. I look forward to the next few weeks!</p>
