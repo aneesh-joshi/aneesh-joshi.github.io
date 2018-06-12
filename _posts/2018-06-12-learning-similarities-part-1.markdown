@@ -10,7 +10,8 @@ categories: jekyll update
 <p>Similarity Learning tries to develop a function which can measure the similarity between two objects. For example, given two questions, what is the likelihood that they are the same or given a question-answer pair, what is the similarity between them. The advantage of these models is that they abstract the internal representations of their inputs and provide outputs as a simple cosine similarity value between the vectors of its inputs.
 Several Similarity Learning models exist, but considering the recent success of deep learning techniques, the project is focusing mainly on the Neural Network based models.</p>
 
-[caption id="attachment_10822" align="aligncenter" width="1320"]<img src="https://rare-technologies.com/wp-content/uploads/2018/05/dssm.png" alt="Example of a similarity learning model, Deep Structured Semantics Model (DSSM)" width="1320" height="554" class="size-full wp-image-10822" /> Example of a similarity learning model, Deep Structured Semantics Model (DSSM)[/caption]
+![](images/dssm.png)
+**Example of a similarity learning model, Deep Structured Semantics Model (DSSM)**
 
 <h3>Community Bonding Period:</h3>
 <p>I utilized the Community Bonding period to develop the easiest model I could find in my list of SL models, <a href="https://www.microsoft.com/en-us/research/publication/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data/" target="_blank">Deep Structured Semantic Model (DSSM)</a>. Luckily, my work was made a lot easier by this awesome repository, <a href="https://github.com/faneshion/MatchZoo" target="_blank">MatchZoo</a>, which has implemented a lot of models and benchmarked them. In fact, MatchZoo was a big influence in my proposal for GSOC. Writing the code for extracting data from the datasets and training a simple model gave me a good feel for the things ahead. The code for this can be found in <a href="https://github.com/RaRe-Technologies/gensim/pull/2050">this </a> PR.</p>
@@ -22,7 +23,8 @@ Several Similarity Learning models exist, but considering the recent success of 
 <p>The next few days went in understanding the metrics involved in evaluating the models and the corresponding code in MatchZoo. I needed a script which would give in query data, get the results and grade them through the metrics. It was made a bit more challenging because I had to translate my data to a format the model understands.</p>
 
 <h4>The Evaluation script should do the following:</h4>
-[caption id="attachment_10838" align="aligncenter" width="749"]<img src="https://rare-technologies.com/wp-content/uploads/2018/05/eval_script_pipeline2.png" alt="Evaluation Pipeline" width="749" height="387" class="size-full wp-image-10838" /> Evaluation Pipeline[/caption]
+![](images/eval_script_pipeline.png)
+**Evaluation Pipeline**
 
 <p>Since each model has it's own way of representing the data, we need to translate the data format for it to understand. For example, my input data is <code>"hello world"</code>, but the model might have a word-int dicitonary which will translate it to <code>[45, 32]</code></p>
 
