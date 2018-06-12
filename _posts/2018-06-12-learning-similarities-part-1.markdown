@@ -11,7 +11,7 @@ categories: jekyll update
 Several Similarity Learning models exist, but considering the recent success of deep learning techniques, the project is focusing mainly on the Neural Network based models.</p>
 
 <img src="https://rare-technologies.com/wp-content/uploads/2018/05/dssm.png" alt="Example of a similarity learning model, Deep Structured Semantics Model (DSSM)" width="1320" height="554" class="size-full wp-image-10822" /> 
-Example of a similarity learning model, Deep Structured Semantics Model (DSSM)
+<center>Example of a similarity learning model, Deep Structured Semantics Model (DSSM)</center>
 
 <h3>Community Bonding Period:</h3>
 <p>I utilized the Community Bonding period to develop the easiest model I could find in my list of SL models, <a href="https://www.microsoft.com/en-us/research/publication/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data/" target="_blank">Deep Structured Semantic Model (DSSM)</a>. Luckily, my work was made a lot easier by this awesome repository, <a href="https://github.com/faneshion/MatchZoo" target="_blank">MatchZoo</a>, which has implemented a lot of models and benchmarked them. In fact, MatchZoo was a big influence in my proposal for GSOC. Writing the code for extracting data from the datasets and training a simple model gave me a good feel for the things ahead. The code for this can be found in <a href="https://github.com/RaRe-Technologies/gensim/pull/2050">this </a> PR.</p>
@@ -24,7 +24,7 @@ Example of a similarity learning model, Deep Structured Semantics Model (DSSM)
 
 <h4>The Evaluation script should do the following:</h4>
 <img src="https://rare-technologies.com/wp-content/uploads/2018/05/eval_script_pipeline2.png" alt="Evaluation Pipeline" width="749" height="387" class="size-full wp-image-10838" /> 
-Evaluation Pipeline
+<center>Evaluation Pipeline</center>
 
 <p>Since each model has it's own way of representing the data, we need to translate the data format for it to understand. For example, my input data is <code>"hello world"</code>, but the model might have a word-int dicitonary which will translate it to <code>[45, 32]</code></p>
 
@@ -35,7 +35,7 @@ Evaluation Pipeline
 <h3>Week 3:</h3>
 <p>At this point, I had a full bench marking of all the models using my <a href="https://github.com/aneesh-joshi/gensim/blob/28fa12f185e137dcd6e4634c2ae454f502e0eba2/gensim/similarity_learning/evaluation_scripts/evaluate_models.py">evaluation script</a> whose results are shown below. This presents a good list of models to implement and tune. In deciding which model to use, we checked their metrics scores, time taken to train and memory required. From the current data, it looks like DRMM_TKS gives the best results with acceptable time-to-train and memory. In this week, I will go about implementing this model.</p>
 <img src="https://rare-technologies.com/wp-content/uploads/2018/05/ranged-benchmarks-mz.png" alt="results of my evaluation script." width="1113" height="409" class="size-full wp-image-10833" />
-the table shows the results of my evaluation script.
+<center>the table shows the results of my evaluation script.</center>
 
 <h3>Week 4:</h3>
 After studying the table, we agreed to implement the drmm_tks model since it gave a good score with acceptable memory and training time trade offs. After building and training the model, I have managed to get results close to those of MatchZoo. The remaining time will now be spent tuning the model, adding more models and presenting an easy interface to use.
