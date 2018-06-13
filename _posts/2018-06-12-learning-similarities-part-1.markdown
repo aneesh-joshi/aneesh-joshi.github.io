@@ -10,7 +10,7 @@ categories: jekyll update
 <p>Similarity Learning tries to develop a function which can measure the similarity between two objects. For example, given two questions, what is the likelihood that they are the same or given a question-answer pair, what is the similarity between them. The advantage of these models is that they abstract the internal representations of their inputs and provide outputs as a simple cosine similarity value between the vectors of its inputs.
 Several Similarity Learning models exist, but considering the recent success of deep learning techniques, the project is focusing mainly on the Neural Network based models.</p>
 
-<img src="https://rare-technologies.com/wp-content/uploads/2018/05/dssm.png" alt="Example of a similarity learning model, Deep Structured Semantics Model (DSSM)" width="1320" height="554" class="size-full wp-image-10822" /> 
+<img src="https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/dssm.png"/> 
 <center>Example of a similarity learning model, Deep Structured Semantics Model (DSSM)</center>
 
 <h3>Community Bonding Period:</h3>
@@ -23,7 +23,7 @@ Several Similarity Learning models exist, but considering the recent success of 
 <p>The next few days went in understanding the metrics involved in evaluating the models and the corresponding code in MatchZoo. I needed a script which would give in query data, get the results and grade them through the metrics. It was made a bit more challenging because I had to translate my data to a format the model understands.</p>
 
 <h4>The Evaluation script should do the following:</h4>
-<img src="https://rare-technologies.com/wp-content/uploads/2018/05/eval_script_pipeline2.png" alt="Evaluation Pipeline" width="749" height="387" class="size-full wp-image-10838" /> 
+<img src="https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/eval_script_pipeline.png"/> 
 <center>Evaluation Pipeline</center>
 
 <p>Since each model has it's own way of representing the data, we need to translate the data format for it to understand. For example, my input data is <code>"hello world"</code>, but the model might have a word-int dicitonary which will translate it to <code>[45, 32]</code></p>
@@ -34,7 +34,7 @@ Several Similarity Learning models exist, but considering the recent success of 
 
 <h3>Week 3:</h3>
 <p>At this point, I had a full bench marking of all the models using my <a href="https://github.com/aneesh-joshi/gensim/blob/28fa12f185e137dcd6e4634c2ae454f502e0eba2/gensim/similarity_learning/evaluation_scripts/evaluate_models.py">evaluation script</a> whose results are shown below. This presents a good list of models to implement and tune. In deciding which model to use, we checked their metrics scores, time taken to train and memory required. From the current data, it looks like DRMM_TKS gives the best results with acceptable time-to-train and memory. In this week, I will go about implementing this model.</p>
-<img src="https://rare-technologies.com/wp-content/uploads/2018/05/ranged-benchmarks-mz.png" alt="results of my evaluation script." width="1113" height="409" class="size-full wp-image-10833" />
+<img src="https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/ranged%20benchmarks%20mz.PNG" />
 <center>the table shows the results of my evaluation script.</center>
 
 <h3>Week 4:</h3>
