@@ -77,4 +77,4 @@ P_1000 | 0.0012 | 0.0012 | 0 | 0
 There still needs to be some more validation on the above results which is what I am working on for the next few days. I will update this post with more details and the code as soon as possible. Now, it remains to be decided whether we should publish the code with the incremental improvement so it can help a few people or shelve this project and work on something which can be merged in the next few weeks.
 
 <h2>Conclusion</h2>
-Research is hard. It won't always lead to positive results. Sometimes a negative result is an important result as well. Edison went through 1600 metals before finding the right one. I have to admit, I am bit disappointed but that is the way of science and things. Hopefully my <b>reoproducible</b> results will help someone else down this path.
+Research is hard. It won't always lead to positive results. Sometimes a negative result is an important result as well. Edison went through 1600 metals before finding the right one. I have to admit, I am bit disappointed but that is the way of science and things. Hopefully my <b>reproducible</b> results will help someone else down this path.
