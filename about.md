@@ -11,6 +11,7 @@ I am a student of computer science. I enjoy science and technology. I have tried
 - Graphic Design
 - Game Development
 - Deep Learning
+
 Lately, my interests have moved to Reinforcement Learning which I want to understand.
 
 I was an intern at Citrix R&D, Banglore where I was part of the SD WAN team.
