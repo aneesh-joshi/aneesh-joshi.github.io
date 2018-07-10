@@ -32,7 +32,45 @@ So, it's been almost a month since my last update and now I have a clearer idea 
 <p>Luckily, towards the later stages I discovered [Google Colab](https://colab.research.google.com/) which allows free training on GPUs (with certain limits)</p>
 <p>While tuning the models, our goal was to beat the Word2Vec baseline (each document is an average of its word's vectors). It was made harder because Word2Vec is so good by itself. For justifying a collecting data for a supervised model, the model should perform a good deal better. Going primarily on the MAP score, Word2Vec scored 0.57 on the WikiQA dataset, which is close to some other supervised models.</p>
 <p>After extensive training, I got a model which **consistently** beat the Word2Vec baseline. But the results weren't **too great** :(</p>
-<img src="https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/ranged%20benchmarks%20mz.PNG" />
+
+  | w2v 300 | drmm_tks | difference | % improvement over w2v
+-- | -- | -- | -- | --
+num_q | 873 | 873 | 0 | 0
+num_ret | 8672 | 8672 | 0 | 0
+num_rel | 1040 | 1040 | 0 | 0
+num_rel_ret | 1040 | 1040 | 0 | 0
+map | 0.5772 | 0.6259 | 0.0487 | 8.437283437
+ndcg_cut_1 | 0.4124 | 0.4731 | 0.0607 | 14.71871969
+ndcg_cut_3 | 0.5596 | 0.6191 | 0.0595 | 10.63259471
+ndcg_cut_5 | 0.6244 | 0.67 | 0.0456 | 7.30301089
+ndcg_cut_10 | 0.6676 | 0.7095 | 0.0419 | 6.276213301
+ndcg_cut_20 | 0.6817 | 0.7201 | 0.0384 | 5.632976383
+gm_map | 0.4459 | 0.4966 | 0.0507 | 11.37026239
+Rprec | 0.3996 | 0.4613 | 0.0617 | 15.44044044
+bpref | 0.3977 | 0.4594 | 0.0617 | 15.51420669
+recip_rank | 0.589 | 0.642 | 0.053 | 8.998302207
+iprec_at_recall_0.00 | 0.5942 | 0.6449 | 0.0507 | 8.532480646
+iprec_at_recall_0.10 | 0.5942 | 0.6449 | 0.0507 | 8.532480646
+iprec_at_recall_0.20 | 0.5942 | 0.6449 | 0.0507 | 8.532480646
+iprec_at_recall_0.30 | 0.5935 | 0.6437 | 0.0502 | 8.458298231
+iprec_at_recall_0.40 | 0.5885 | 0.6397 | 0.0512 | 8.700084962
+iprec_at_recall_0.50 | 0.5882 | 0.6396 | 0.0514 | 8.738524311
+iprec_at_recall_0.60 | 0.5697 | 0.6136 | 0.0439 | 7.705810075
+iprec_at_recall_0.70 | 0.5697 | 0.6136 | 0.0439 | 7.705810075
+iprec_at_recall_0.80 | 0.5665 | 0.6115 | 0.045 | 7.943512798
+iprec_at_recall_0.90 | 0.566 | 0.6115 | 0.0455 | 8.038869258
+iprec_at_recall_1.00 | 0.566 | 0.6115 | 0.0455 | 8.038869258
+P_5 | 0.1908 | 0.1956 | 0.0048 | 2.51572327
+P_10 | 0.1116 | 0.1132 | 0.0016 | 1.433691756
+P_15 | 0.0778 | 0.078 | 0.0002 | 0.2570694087
+P_20 | 0.0592 | 0.0592 | 0 | 0
+P_30 | 0.0397 | 0.0397 | 0 | 0
+P_100 | 0.0119 | 0.0119 | 0 | 0
+P_200 | 0.006 | 0.006 | 0 | 0
+P_500 | 0.0024 | 0.0024 | 0 | 0
+P_1000 | 0.0012 | 0.0012 | 0 | 0
+
+
 <p>Alas, the model we made is better but not so much better. This still needs more validation but the results probably won't change so much considering the highest ever recordrded WikiQA score is 0.65 and my model gets 0.62. Even if I manged to get 0.67, which is a 0.1 improvement, it wouldn't be considerably more to justify practical usage</p>
 
 <h2>Future Work</h2>
