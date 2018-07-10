@@ -12,13 +12,13 @@ So, it's been almost a month since my last update and now I have a clearer idea 
 <h2>Software Development:</h2>
 <p>Gensim isn't only a research repository, it is an engineering toolbox whose code adheres to the best practices and any code change requires careful deliberation before merging. Any proposed change should be justified in its usefulness compared to the cost.</p>
 <p>Being an undergrad student, I was used to writing flimsy code which got the job slopily done. In the past few weeks, with the guidance of my mentors, I made several changes in my code to make it worthy of the gensim standard. These changes primarily included:</p>
-<ol>
+
 1. doctests
 2. doctrings
 3. Code refactoring
 4. Streamable inputs
 5. gensim-data integration
-</ol>
+
 
 <p>Initially, it felt like an unnecessary burden for my project but as I wrote more test cases, I noticed bugs in my code and failures at edge cases. Writing docstrings felt important but not that important; my docstring lacked the needed rigour. But I got used to it over time. Recently, I was reading someone else's code and I got irritated seeing the lack of docstrings. "What is this varaible?! is it a list or a list of lists! ugh!" I can only imagine Ivan's irritation. I realised the truth in the PEP8's statement : "Code is read more times than it is written"</p>
 
@@ -31,7 +31,7 @@ So, it's been almost a month since my last update and now I have a clearer idea 
 <p>These two points meant I had to wait a minute before all the data was loaded into memory and the data preprocessing was done. Once that was over, my RAM was fully siezed, it's previous contents pushed into the SWAP space. Then I wait while fiddling with my phone nervously checking the performance metrics hoping that the validation score improves considerably. Once training was complete, I had to wait till RAM was cleared and the SWAP was unloaded. Add a HDD with say 40 MB per second read/write and you get a very slowly iterating process of parameter tuning</p>
 <p>Luckily, towards the later stages I discovered [Google Colab](https://colab.research.google.com/) which allows free training on GPUs (with certain limits)</p>
 <p>While tuning the models, our goal was to beat the Word2Vec baseline (each document is an average of its word's vectors). It was made harder because Word2Vec is so good by itself. For justifying a collecting data for a supervised model, the model should perform a good deal better. Going primarily on the MAP score, Word2Vec scored 0.57 on the WikiQA dataset, which is close to some other supervised models.</p>
-<p>After extensive training, I got a model which **consistently** beat the Word2Vec baseline. But the results weren't **too great** :(</p>
+<p>After extensive training, I got a model which <b>consistently</b> beat the Word2Vec baseline. But the results weren't <b>too great</b> /:(</p>
 
   | w2v 300 | drmm_tks | difference | % improvement over w2v
 -- | -- | -- | -- | --
@@ -77,4 +77,4 @@ P_1000 | 0.0012 | 0.0012 | 0 | 0
 There still needs to be some more validation on the above results which is what I am working on for the next few days. I will update this post with more details and the code as soon as possible. Now, it remains to be decided whether we should publish the code with the incremental improvement so it can help a few people or shelve this project and work on something which can be merged in the next few weeks.
 
 <h2>Conclusion</h2>
-Research is hard. It won't always lead to positive results. Sometimes a negative result is an important result as well. Edison went through 1600 metals before finding the right one. I have to admit, I am bit disappointed but that is the way of science and things. Hopefully my **reoproducible** results will help someone else down this path.
+Research is hard. It won't always lead to positive results. Sometimes a negative result is an important result as well. Edison went through 1600 metals before finding the right one. I have to admit, I am bit disappointed but that is the way of science and things. Hopefully my <b>reoproducible</b> results will help someone else down this path.
