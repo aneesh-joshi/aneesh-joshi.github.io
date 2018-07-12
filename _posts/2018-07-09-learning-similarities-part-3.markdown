@@ -1,0 +1,335 @@
+---
+layout: post
+title:  "Learning Similarities - Part 2"
+date:   2018-07-09 18:21:25 +0730
+categories: jekyll update
+---
+
+
+WikiQA test set | w2v 300 dim | MP | FT 300 dim | DRMM_TKS | biMPM
+-- | -- | -- | -- | -- | --
+map | 0.6277 | 0.6515 | 0.5276 | 0.6259 | 0.3856
+gm_map | 0.4968 | 0.5147 | 0.3923 | 0.4966 | 0.269
+Rprec | 0.4667 | 0.5089 | 0.3429 | 0.4613 | 0.1965
+
+
+Current Situation
+For the task of similarity learning, we are evaluating on the WikiQA Dataset
+The MAP value of the WikiQA dataset shows a correlation across datasets.
+
+The idea was, do well on WikiQA and it should do well across different datasets.
+
+
+
+About the WikiQA:
+Total Queries : 1242
+Train Queries(80%) : 873
+Test Queries(20%) : 263
+Dev Queries(10%) : 126
+
+# w2v
+For this, we first have to get a baseline to beat. We use the average of word vectors in a sentence to get the vector for a sentence/document. The 300 dimensional vectors are seen to perform the best
+
+When 2 documents are to be compared for similarity/relevance, we take the Cosine Similarity between them as the similarity.
+
+The w2v 300 dim MAP score on the 
+full set(100%) of WikiQA is 0.59
+train split(80%) of WikiQA is 0.57
+test split(20%) of WikiQA is 0.62
+dev split(10%) of WikiQA is 0.62
+
+# DRMM TKS
+The Deep Relevance Matching Model(Top K Solutions) showed the best result of 0.65 MAP in our initial evaluation.
+After intensive parameter tuning, this value hasn't been reached on our model.
+Our model manages to get a MAP score of 
+0.63 on the test set
+0.66 on the dev set
+
+# MatchPyramid
+This model performed second best in our evaluation and thus was implemented.
+It currently scores the best MAP of
+0.65 on the test set
+
+# Initial Conclusion
+The initial paper which Introduced [WikiQA](https://www.microsoft.com/en-us/research/publication/wikiqa-a-challenge-dataset-for-open-domain-question-answering/) proposed a model CNN-Cnt which could get a MAP of 0.65 on it. It compared it with several other models and claimed best results. We thought this was the theoretical/SOTA MAP value and the w2v model itself does decently good on it(0.62)
+
+(The test splits are same for our and their evaluation since they have themselves provided the train-dev-test split.)
+
+**Is such a scenario, is it worth gathering supervised data?** This is the main question. Seeing this, we felt like it wasn't really worth it and we should move onto some other work.
+
+# Secondary Conclusion
+We decided to go through a few more datasets to make sure this low performance isn't specific to the WikiQA dataset.
+For this, we considered [this gist](https://github.com/sebastianruder/NLP-progress/blob/master/semantic_textual_similarity.md) which shares a lot of papers and datasets in NLP. Going through the papers, my attention was caught by some of the MAP values suggested by the papers.
+
+[Bilateral Multi-Perspective Matching for Natural Language Sentences(BiMPM)](https://arxiv.org/pdf/1702.03814.pdf) paper shows a MAP of **0.71** on WikiQA.
+The BiMPM paper cited another paper [SequenceMatchSequence](https://arxiv.org/pdf/1611.01747.pdf) which claimed an even higher MAP of **0.74** on WikiQA.
+
+![alt](https://aneesh-joshi.github.io/pic1.png)
+
+![alt](https://aneesh-joshi.github.io/pic2.png)
+
+These are almost **1.2** more than our w2v baseline.
+
+Since I found a partially implemented solution of BiMPM in a repository called [MatchZoo](https://github.com/faneshion/MatchZoo), I went about implementing it. It is a very heavy model and needs GPU. Even with GPU, it takes 25 minutes for one epoch of 9000 samples. (I wonder if there would be any practical use of such a slow and heavy model.)
+
+While my BiMPM model trained, I also looked through the SequenceMatchSequence paper and found that the author has provided a [repo](https://github.com/shuohangwang/SeqMatchSeq) with the implementations and a docker image to ensure reproducability. However, it is written in lua and uses torch.
+
+I also found a [repo](https://github.com/pcgreat/SeqMatchSeq) with the same code ported to pytorch. The author of this repo comments : "Author's original repo reaches 0.734 (MAP) in Wikiqa Dev, and this code reaches 0.727 (MAP)"
+The author hasn't mentioned which set's score he reports in the paper. I assume, it's the test set.
+
+I tried reproducing the repository on my machine but there are some bugs in it. :(
+
+There was an [issue](https://github.com/pcgreat/SeqMatchSeq/issues/1) about MAP coming to 0.62 instead of 0.72 on dev set. The author commented:
+
+> I am afraid you are right. I used to reach ~72% via the given random seed on an old version of pytorch, but now with the new version of pytorch, I wasn't able to reproduce the result.
+My personal opinion is that the model is neither deep or sophisticated, and usually for such kind of model, tuning hyper parameters will change the results a lot (although I don't think it's worthy to invest time tweaking an unstable model structure).
+If you want guaranteed decent accuracy on answer selection task, I suggest you take a look at those transfer learning methods from reading comprehension. One of them is here https://github.com/pcgreat/qa-transfer
+
+
+And thus, my hunt has lead me to the paper : [Question Answering through Transfer Learning from Large Fine-grained Supervision Data](http://aclweb.org/anthology/P17-2081) which makes a crazier claim on MAP : **0.83**
+
+The paper's author provides the implementation [here](https://github.com/shmsw25/qa-transfer) in tensorflow. It might work, but after going through so many repos which claim to work, I am not so sure.
+
+The author makes some notable claims in it's abstract:
+
+>We show that the task of question answering (QA) can significantly benefit from the transfer learning of models trained on a different large, fine-grained QA dataset. We achieve the state of the art in two well-studied QA datasets, WikiQA and SemEval-2016 (Task 3A), through a basic transfer learning technique from SQuAD. 
+**For WikiQA, our model outperforms the previous best model by more than 8%.** We demonstrate that finer supervision provides better guidance for learning lexical and syntactic information than coarser supervision, through quantitative results and visual analysis. We also show that a similar transfer learning procedure achieves the state of the art on an entailment task.
+
+At this point, I am mostly skeptical. But if it works, **0.62 of word2vec -> 0.83 (almost 0.21)** seems pretty good.
+
+![alt](https://aneesh-joshi.github.io/pic3.png)
+
+I can only wonder if tomorrow, I will stumble upon a newer paper with 0.9!
+
+
+# Non ML related front
+My gensim-like API is *almost* ready. It just needs a decently working model!
+
+It has the following features:
+- Saving
+- Loading
+- Online Training (needs a bit more checking)
+- Metric Callbacks
+- Streaming Support
+
+Here's a sample log of training the BiMPM model
+
+```
+2018-07-12 12:13:25,552 : INFO : 'pattern' package not found; tag filters are not available for English
+2018-07-12 12:13:25,987 : INFO : loading projection weights from /home/aneeshyjoshi/gensim-data/glove-wiki-gigaword-50/glove-wiki-gigaword-50.gz
+2018-07-12 12:13:44,624 : INFO : loaded (400000, 50) matrix from /home/aneeshyjoshi/gensim-data/glove-wiki-gigaword-50/glove-wiki-gigaword-50.gz
+2018-07-12 12:13:44,624 : INFO : Starting Vocab Build
+2018-07-12 12:13:45,139 : INFO : Vocab Build Complete
+2018-07-12 12:13:45,139 : INFO : Vocab Size is 19890
+2018-07-12 12:13:45,140 : INFO : Building embedding index using KeyedVector pretrained word embeddings
+2018-07-12 12:13:45,140 : INFO : The embeddings_index built from the given file has 400000 words of 50 dimensions
+2018-07-12 12:13:45,140 : INFO : Building the Embedding Matrix for the model's Embedding Layer
+2018-07-12 12:13:45,220 : INFO : There are 740 words out of 19890 (3.72%) not in the embeddings. Setting them to random
+2018-07-12 12:13:45,220 : INFO : Adding additional words from the embedding file to embedding matrix
+2018-07-12 12:13:46,366 : INFO : Normalizing the word embeddings
+2018-07-12 12:13:46,545 : INFO : Embedding Matrix build complete. It now has shape (400742, 50)
+2018-07-12 12:13:46,545 : INFO : Pad word has been set to index 400740
+2018-07-12 12:13:46,545 : INFO : Unknown word has been set to index 400741
+2018-07-12 12:13:46,545 : INFO : Embedding index build complete
+2018-07-12 12:13:46,580 : INFO : Input is an iterable amd will be streamed
+__________________________________________________________________________________________________
+2018-07-12 12:13:50,335 : INFO : Layer (type)                    Output Shape         Param #     Connected to                     
+2018-07-12 12:13:50,335 : INFO : ==================================================================================================
+2018-07-12 12:13:50,335 : INFO : doc (InputLayer)                (None, 40)           0                                            
+2018-07-12 12:13:50,335 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,336 : INFO : query (InputLayer)              (None, 40)           0                                            
+2018-07-12 12:13:50,336 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,336 : INFO : embedding_1 (Embedding)         (None, 40, 50)       20037100    query[0][0]                      
+2018-07-12 12:13:50,336 : INFO :                                                                  doc[0][0]                        
+2018-07-12 12:13:50,336 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,336 : INFO : doc_len (InputLayer)            (None, 1)            0                                            
+2018-07-12 12:13:50,336 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,336 : INFO : query_len (InputLayer)          (None, 1)            0                                            
+2018-07-12 12:13:50,336 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,336 : INFO : bi_lstm_1 (BiLSTM)              [(None, 40, 140), (N 0           embedding_1[0][0]                
+2018-07-12 12:13:50,336 : INFO :                                                                  embedding_1[1][0]                
+2018-07-12 12:13:50,336 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,336 : INFO : sequence_mask_2 (SequenceMask)  (None, 40)           0           doc_len[0][0]                    
+2018-07-12 12:13:50,336 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,336 : INFO : sequence_mask_1 (SequenceMask)  (None, 40)           0           query_len[0][0]                  
+2018-07-12 12:13:50,336 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,336 : INFO : multi_perspective_match_1 (Mult (None, 40, 250)      28000      bi_lstm_1[1][0]                  
+2018-07-12 12:13:50,336 : INFO :                                                                  bi_lstm_1[1][1]                  
+2018-07-12 12:13:50,336 : INFO :                                                                  sequence_mask_2[0][0]            
+2018-07-12 12:13:50,336 : INFO :                                                                  bi_lstm_1[0][0]                  
+2018-07-12 12:13:50,337 : INFO :                                                                  bi_lstm_1[0][1]                  
+2018-07-12 12:13:50,337 : INFO :                                                                  sequence_mask_1[0][0]            
+2018-07-12 12:13:50,337 : INFO :                                                                  bi_lstm_1[0][0]                  
+2018-07-12 12:13:50,337 : INFO :                                                                  bi_lstm_1[0][1]                  
+2018-07-12 12:13:50,337 : INFO :                                                                  sequence_mask_1[0][0]            
+2018-07-12 12:13:50,337 : INFO :                                                                  bi_lstm_1[1][0]                  
+2018-07-12 12:13:50,337 : INFO :                                                                  bi_lstm_1[1][1]                  
+2018-07-12 12:13:50,337 : INFO :                                                                  sequence_mask_2[0][0]            
+2018-07-12 12:13:50,337 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,337 : INFO : bi_lstm_2 (BiLSTM)              [(None, 40, 100), (N 0           multi_perspective_match_1[0][0]  
+2018-07-12 12:13:50,337 : INFO :                                                                  multi_perspective_match_1[1][0]  
+2018-07-12 12:13:50,337 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,337 : INFO : concatenate_1 (Concatenate)     (None, 200)          0           bi_lstm_2[0][1]                  
+2018-07-12 12:13:50,337 : INFO :                                                                  bi_lstm_2[1][1]                  
+2018-07-12 12:13:50,337 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,337 : INFO : highway_1 (Highway)             (None, 200)          80400       concatenate_1[0][0]              
+2018-07-12 12:13:50,337 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,337 : INFO : dropout_1 (Dropout)             (None, 200)          0           highway_1[0][0]                  
+2018-07-12 12:13:50,337 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,337 : INFO : dense_1 (Dense)                 (None, 1)            201         dropout_1[0][0]                  
+2018-07-12 12:13:50,337 : INFO : ==================================================================================================
+2018-07-12 12:13:50,338 : INFO : Total params: 20,145,701
+2018-07-12 12:13:50,338 : INFO : Trainable params: 108,601
+2018-07-12 12:13:50,338 : INFO : Non-trainable params: 20,037,100
+2018-07-12 12:13:50,338 : INFO : __________________________________________________________________________________________________
+2018-07-12 12:13:50,434 : INFO : Found 26 unknown words. Set them to unknown word index : 400741
+2018-07-12 12:13:50,448 : INFO : Found 101 unknown words. Set them to unknown word index : 400741
+Epoch 1/12
+200/200 [==============================] - 331s 2s/step - loss: 0.8388 - acc: 0.3481
+2018-07-12 12:19:33,859 : INFO : MAP: 0.58
+2018-07-12 12:19:33,863 : INFO : nDCG@1 : 0.40
+2018-07-12 12:19:33,868 : INFO : nDCG@3 : 0.59
+2018-07-12 12:19:33,872 : INFO : nDCG@5 : 0.64
+2018-07-12 12:19:33,877 : INFO : nDCG@10 : 0.69
+2018-07-12 12:19:33,881 : INFO : nDCG@20 : 0.69
+Epoch 2/12
+200/200 [==============================] - 326s 2s/step - loss: 0.7811 - acc: 0.37841;3D
+2018-07-12 12:25:06,113 : INFO : MAP: 0.58
+2018-07-12 12:25:06,118 : INFO : nDCG@1 : 0.40
+2018-07-12 12:25:06,122 : INFO : nDCG@3 : 0.58
+2018-07-12 12:25:06,127 : INFO : nDCG@5 : 0.63
+2018-07-12 12:25:06,131 : INFO : nDCG@10 : 0.69
+2018-07-12 12:25:06,136 : INFO : nDCG@20 : 0.69
+Epoch 3/12
+200/200 [==============================] - 327s 2s/step - loss: 0.7491 - acc: 0.3710
+2018-07-12 12:30:38,413 : INFO : MAP: 0.61
+2018-07-12 12:30:38,417 : INFO : nDCG@1 : 0.46
+2018-07-12 12:30:38,422 : INFO : nDCG@3 : 0.61
+2018-07-12 12:30:38,426 : INFO : nDCG@5 : 0.66
+2018-07-12 12:30:38,431 : INFO : nDCG@10 : 0.71
+2018-07-12 12:30:38,435 : INFO : nDCG@20 : 0.72
+Epoch 4/12
+200/200 [==============================] - 326s 2s/step - loss: 0.7460 - acc: 0.3932
+2018-07-12 12:36:10,651 : INFO : MAP: 0.62
+2018-07-12 12:36:10,655 : INFO : nDCG@1 : 0.46
+2018-07-12 12:36:10,660 : INFO : nDCG@3 : 0.62
+2018-07-12 12:36:10,664 : INFO : nDCG@5 : 0.67
+2018-07-12 12:36:10,669 : INFO : nDCG@10 : 0.72
+2018-07-12 12:36:10,673 : INFO : nDCG@20 : 0.72
+Epoch 5/12
+200/200 [==============================] - 326s 2s/step - loss: 0.7355 - acc: 0.3640
+2018-07-12 12:41:42,642 : INFO : MAP: 0.62
+2018-07-12 12:41:42,646 : INFO : nDCG@1 : 0.48
+2018-07-12 12:41:42,650 : INFO : nDCG@3 : 0.62
+2018-07-12 12:41:42,655 : INFO : nDCG@5 : 0.67
+2018-07-12 12:41:42,659 : INFO : nDCG@10 : 0.72
+2018-07-12 12:41:42,664 : INFO : nDCG@20 : 0.72
+Epoch 6/12
+200/200 [==============================] - 326s 2s/step - loss: 0.7409 - acc: 0.3601
+2018-07-12 12:47:14,979 : INFO : MAP: 0.61
+2018-07-12 12:47:14,983 : INFO : nDCG@1 : 0.44
+2018-07-12 12:47:14,988 : INFO : nDCG@3 : 0.62
+2018-07-12 12:47:14,992 : INFO : nDCG@5 : 0.67
+2018-07-12 12:47:14,997 : INFO : nDCG@10 : 0.71
+2018-07-12 12:47:15,001 : INFO : nDCG@20 : 0.72
+Epoch 7/12
+200/200 [==============================] - 326s 2s/step - loss: 0.7284 - acc: 0.3744
+2018-07-12 12:52:47,034 : INFO : MAP: 0.62
+2018-07-12 12:52:47,039 : INFO : nDCG@1 : 0.47
+2018-07-12 12:52:47,043 : INFO : nDCG@3 : 0.62
+2018-07-12 12:52:47,047 : INFO : nDCG@5 : 0.66
+2018-07-12 12:52:47,052 : INFO : nDCG@10 : 0.72
+2018-07-12 12:52:47,057 : INFO : nDCG@20 : 0.72
+Epoch 8/12
+200/200 [==============================] - 327s 2s/step - loss: 0.7218 - acc: 0.3861
+2018-07-12 12:58:19,376 : INFO : MAP: 0.63
+2018-07-12 12:58:19,380 : INFO : nDCG@1 : 0.48
+2018-07-12 12:58:19,385 : INFO : nDCG@3 : 0.63
+2018-07-12 12:58:19,389 : INFO : nDCG@5 : 0.69
+2018-07-12 12:58:19,394 : INFO : nDCG@10 : 0.73
+2018-07-12 12:58:19,398 : INFO : nDCG@20 : 0.73
+Epoch 9/12
+200/200 [==============================] - 326s 2s/step - loss: 0.7167 - acc: 0.3806
+2018-07-12 13:03:51,447 : INFO : MAP: 0.63
+2018-07-12 13:03:51,452 : INFO : nDCG@1 : 0.48
+2018-07-12 13:03:51,456 : INFO : nDCG@3 : 0.63
+2018-07-12 13:03:51,460 : INFO : nDCG@5 : 0.68
+2018-07-12 13:03:51,465 : INFO : nDCG@10 : 0.72
+2018-07-12 13:03:51,469 : INFO : nDCG@20 : 0.73
+Epoch 10/12
+200/200 [==============================] - 326s 2s/step - loss: 0.7256 - acc: 0.3883
+2018-07-12 13:09:23,654 : INFO : MAP: 0.63
+2018-07-12 13:09:23,659 : INFO : nDCG@1 : 0.48
+2018-07-12 13:09:23,663 : INFO : nDCG@3 : 0.63
+2018-07-12 13:09:23,668 : INFO : nDCG@5 : 0.68
+2018-07-12 13:09:23,672 : INFO : nDCG@10 : 0.72
+2018-07-12 13:09:23,677 : INFO : nDCG@20 : 0.73
+Epoch 11/12
+200/200 [==============================] - 326s 2s/step - loss: 0.7202 - acc: 0.3880
+2018-07-12 13:14:55,811 : INFO : MAP: 0.62
+2018-07-12 13:14:55,815 : INFO : nDCG@1 : 0.48
+2018-07-12 13:14:55,820 : INFO : nDCG@3 : 0.62
+2018-07-12 13:14:55,824 : INFO : nDCG@5 : 0.67
+2018-07-12 13:14:55,829 : INFO : nDCG@10 : 0.72
+2018-07-12 13:14:55,833 : INFO : nDCG@20 : 0.72
+Epoch 12/12
+200/200 [==============================] - 326s 2s/step - loss: 0.7186 - acc: 0.3909
+2018-07-12 13:20:27,924 : INFO : MAP: 0.62
+2018-07-12 13:20:27,929 : INFO : nDCG@1 : 0.47
+2018-07-12 13:20:27,933 : INFO : nDCG@3 : 0.63
+2018-07-12 13:20:27,938 : INFO : nDCG@5 : 0.68
+2018-07-12 13:20:27,942 : INFO : nDCG@10 : 0.72
+2018-07-12 13:20:27,947 : INFO : nDCG@20 : 0.73
+Test set results
+2018-07-12 13:20:28,170 : INFO : Found 21 unknown words. Set them to unknown word index : 400741
+2018-07-12 13:20:28,200 : INFO : Found 264 unknown words. Set them to unknown word index : 400741
+2018-07-12 13:20:40,185 : INFO : MAP: 0.57
+2018-07-12 13:20:40,193 : INFO : nDCG@1 : 0.44
+2018-07-12 13:20:40,202 : INFO : nDCG@3 : 0.57
+2018-07-12 13:20:40,211 : INFO : nDCG@5 : 0.64
+2018-07-12 13:20:40,221 : INFO : nDCG@10 : 0.68
+2018-07-12 13:20:40,230 : INFO : nDCG@20 : 0.69
+2018-07-12 13:20:40,232 : INFO : saving BiMPM object under test_bimpm, separately None
+2018-07-12 13:20:40,232 : INFO : storing np array 'vectors' to test_bimpm.word_embedding.vectors.npy
+2018-07-12 13:20:40,593 : INFO : storing np array 'embedding_matrix' to test_bimpm.embedding_matrix.npy
+2018-07-12 13:20:41,235 : INFO : not storing attribute model
+2018-07-12 13:20:41,235 : INFO : not storing attribute _get_pair_list
+2018-07-12 13:20:41,235 : INFO : not storing attribute _get_full_batch_iter
+2018-07-12 13:20:41,235 : INFO : not storing attribute queries
+2018-07-12 13:20:41,235 : INFO : not storing attribute docs
+2018-07-12 13:20:41,235 : INFO : not storing attribute labels
+2018-07-12 13:20:41,235 : INFO : not storing attribute pair_list
+2018-07-12 13:20:42,237 : INFO : saved test_bimpm
+```
+
+As can be seen, model seems to be doing a lot worse than the claimed **0.71** But at this point, I can't tell if I that's the model's fault or a fault in my implementation. With 20 minutes per epoch, it's a bit tough to tune.
+
+This brings me to my next topic:
+
+# Evaluation Metrics
+The chief metrics chosen here is Mean Average Precision(MAP).
+There seem to be varying implementations of it. Above, you can see the results of my implementation which can be found [here](https://github.com/aneesh-joshi/gensim/blob/similarity_learning_develop/gensim/models/experimental/evaluation_metrics.py)
+
+There is a competing implementation by [TREC](https://trec.nist.gov/trec_eval/) which is a standard for IR system evaluations. TREC provided a binary to evaluate your results as long as you put them in a cerain format. All reported Metrics are from TREC. Usually, my metrics and TREC have results which are about 0.03 apart but not always. For example, in the above example, my metrics say 0.57 MAP but TREC says 0.4 MAP.
+
+# Evaluation Method
+All my evaluations are done by [one script](https://github.com/aneesh-joshi/gensim/blob/my_full_tune_branch/gensim/models/experimental/save_eval_TREC_format.py)
+
+It simply loads the model and makes it predict a similarity between 2 sentences/documents. The similarity is stored in the TREC format. It is well documented and it should be easy to understand on a first glance.
+
+
+# Final Conclusion
+The final questions which needs answering is:
+How much increase in MAP is enough to justify a new model?
+
+Potentially, 0.2 seems like a good estimate in which case, it [QA-Transfer](https://github.com/pcgreat/qa-transfer) seems like a good bet. I am still skeptical if it will work
+If 0.1 we can try BiMPM or SeqMatchSeq.
+
+# My Personal Thoughts
+Training and Tuning these models has been pretty cumbersome. There is a huge train time and often negligible changes. Many of the models don't do as well and it's pretty hard to point out the exact problem.
+I am putting in all my time and yet there is no significant progress in the last few days. I call this phase Parameter Tuning Hell. It's hard to explain to others what work you have done because there is no "progress". But progress in this tuning isn't a function of time and effort or is it? In a Software Dev task, it would be easier to measure progress as "this module is done" and problems can be pin pointed and solutions mostly found on Stack Overflow. While building models, I make the model but it doesn't work. I try changing this and that, but I if the model doesn't do better, what can I do?
+
+# What I think we should do
+QA-Transfer seems to be pretty recent and might be a good way to go ahead.
+
+
