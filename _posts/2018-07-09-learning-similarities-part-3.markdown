@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Learning Similarities - Part 2"
-date:   2018-07-09 18:21:25 +0730
+title:  "Learning Similarities - Part 3"
+date:   2018-12-09 20:37:25 +2038
 categories: jekyll update
 ---
 
