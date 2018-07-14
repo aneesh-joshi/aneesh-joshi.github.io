@@ -1,10 +1,9 @@
 ---
 layout: post
 title:  "Learning Similarities - Part 3"
-date:   2018-12-09 20:37:25 +2038
+date:   2018-09-12 20:37:25 +2038
 categories: jekyll update
 ---
-
 
 WikiQA test set | w2v 300 dim | MP | FT 300 dim | DRMM_TKS | biMPM
 -- | -- | -- | -- | -- | --
@@ -13,24 +12,79 @@ gm_map | 0.4968 | 0.5147 | 0.3923 | 0.4966 | 0.269
 Rprec | 0.4667 | 0.5089 | 0.3429 | 0.4613 | 0.1965
 
 
-Current Situation
-For the task of similarity learning, we are evaluating on the WikiQA Dataset
-The MAP value of the WikiQA dataset shows a correlation across datasets.
+# Approach
+Before implementing any models, we decided to set up an evaluation pipeline. Evaluating the models, however needed them to be implemented. Luckily, we have a repository, [MatchZoo](https://github.com/faneshion/MatchZoo), which had the models implemented.
+Although, the repo was providing its own evaluation metrics, they couldn't be trusted. So, we set up our evaluation script which can be found in my [Evaluation Repo](https://github.com/aneesh-joshi/Similarity-Learning-Evaluation-Scripts). The script basically gets the output in the TREC format and evaluates it.
 
-The idea was, do well on WikiQA and it should do well across different datasets.
+Based on these results:
+![results](https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/ranged%20benchmarks%20mz.PNG)
+
+we decided to implement DRMM_TKS model since it gave the best results.
+Unfortunately, at the time, it didn't cross my mind to evaluate the 300 dimensional word vectors. (The evaluation you see is for 50 dims. I made the naive assumption that the numbers will be similar irrespective of dims). Later inspection revealed that 300 dim glove vectors gets 0.62 MAP.
 
 
+# Datasets
+## About WikiQA
+Wiki QA dataset consists of a query, doc, label pairs. You can download it [here](https://download.microsoft.com/download/E/5/F/E5FCFCEE-7005-4814-853D-DAA7C66507E0/WikiQACorpus.zip)
+The general format is:
+```
+q1	d1_1	0
+q1	d1_2	1
+q1	d1_3	0
+-------------
+q2	d2_1	0
+q2	d2_2	1
+q2	d2_3	0
+q2	d2_4	1
+-------------
+:
+:
+-------------
+qn	dn_1	0
+qn	dn_2	1
+qn	dn_3	0
+```
 
-About the WikiQA:
+Every query has a set of candidate documents which can be relevant or irrelevant to it.
+Sometimes, a query can have no relevant documents. We filter out such documents.
+
+Here's an example of the dataset:
+
+QuestionID | Question | DocumentID | DocumentTitle | SentenceID | Sentence | Label
+-- | -- | -- | -- | -- | -- | --
+Q1 | how are glacier caves formed? | D1 | Glacier cave | D1-0 | A partly submerged glacier cave on Perito Moreno Glacier . | 0
+Q1 | how are glacier caves formed? | D1 | Glacier cave | D1-1 | The ice facade is approximately 60 m high | 0
+Q1 | how are glacier caves formed? | D1 | Glacier cave | D1-2 | Ice formations in the Titlis glacier cave | 0
+Q1 | how are glacier caves formed? | D1 | Glacier cave | D1-3 | A glacier cave is a cave formed within the ice of a glacier . | 1
+Q1 | how are glacier caves formed? | D1 | Glacier cave | D1-4 | Glacier caves are often called ice caves , but this term is properly used to describe bedrock caves that contain year-round ice. | 0
+Q2 | How are the directions of the velocity and force vectors related in a circular motion | D2 | Circular motion | D2-0 | In physics , circular motion is a movement of an object along the circumference of a circle or rotation along a circular path. | 0
+Q2 | How are the directions of the velocity and force vectors related in a circular motion | D2 | Circular motion | D2-1 | It can be uniform, with constant angular rate of rotation (and constant speed), or non-uniform with a changing rate of rotation. | 0
+Q2 | How are the directions of the velocity and force vectors related in a circular motion | D2 | Circular motion | D2-2 | The rotation around a fixed axis of a three-dimensional body involves circular motion of its parts. | 0
+Q2 | How are the directions of the velocity and force vectors related in a circular motion | D2 | Circular motion | D2-3 | The equations of motion describe the movement of the center of mass of a body. | 0
+Q2 | How are the directions of the velocity and force vectors related in a circular motion | D2 | Circular motion | D2-4 | Examples of circular motion include: an artificial satellite orbiting the Earth at constant height, a stone which is tied to a rope and is being swung in circles, a car turning through a curve in a race track , an electron moving perpendicular to a uniform magnetic field , and a gear turning inside a mechanism. | 0
+Q2 | How are the directions of the velocity and force vectors related in a circular motion | D2 | Circular motion | D2-5 | Since the object's velocity vector is constantly changing direction, the moving object is undergoing acceleration by a centripetal force in the direction of the center of rotation. | 0
+Q2 | How are the directions of the velocity and force vectors related in a circular motion | D2 | Circular motion | D2-6 | Without this acceleration, the object would move in a straight line, according to Newton's laws of motion . | 0
+
+
+## WikiQA Statistics:
 Total Queries : 1242
 Train Queries(80%) : 873
 Test Queries(20%) : 263
 Dev Queries(10%) : 126
 
-# w2v
-For this, we first have to get a baseline to beat. We use the average of word vectors in a sentence to get the vector for a sentence/document. The 300 dimensional vectors are seen to perform the best
+## About other datasets not used
+The table below summarizes WikiQA and some other datasets like TODO
 
+## Why WikiQA
+For the task of similarity learning, we are evaluating on the WikiQA Dataset. The MAP value of the WikiQA dataset shows a correlation across datasets. The idea was, do well on WikiQA and it should do well across different datasets. Also, we have an existing repo which had code and benchmarks written around [WikiQA](https://github.com/faneshion/MatchZoo).
+
+# Establishing a baseline with w2v
+First have to had to get a baseline to beat. We use the average of word vectors in a sentence to get the vector for a sentence/document.
+```
+"Hello World" -> (vec("Hello") + vec("World"))/2
+```
 When 2 documents are to be compared for similarity/relevance, we take the Cosine Similarity between them as the similarity.
+(300 dimensional vectors were seen to perform the best, so we chose them.)
 
 The w2v 300 dim MAP score on the 
 full set(100%) of WikiQA is 0.59
@@ -39,16 +93,13 @@ test split(20%) of WikiQA is 0.62
 dev split(10%) of WikiQA is 0.62
 
 # DRMM TKS
-The Deep Relevance Matching Model(Top K Solutions) showed the best result of 0.65 MAP in our initial evaluation.
-After intensive parameter tuning, this value hasn't been reached on our model.
-Our model manages to get a MAP score of 
-0.63 on the test set
-0.66 on the dev set
+The Deep Relevance Matching Model(Top K Solutions) is a variant of the DRMM model. Although it's not published as a paper, the author of the paper released the code along with the DRMM code in the [MatchZoo](https://github.com/faneshion/MatchZoo) repo. Our initial evaluation showed the best result of 0.65 MAP. However, after intensive parameter tuning, this value hasn't been reached on our model. Our model manages to get a MAP score of 0.63 on the test set and 0.66 on the dev set.
+[Link to Paper](https://arxiv.org/pdf/1711.08611.pdf)
 
 # MatchPyramid
 This model performed second best in our evaluation and thus was implemented.
-It currently scores the best MAP of
-0.65 on the test set
+It currently scores the best MAP of 0.65 on the test set
+[Link to Paper](https://arxiv.org/pdf/1602.06359.pdf)
 
 # Initial Conclusion
 The initial paper which Introduced [WikiQA](https://www.microsoft.com/en-us/research/publication/wikiqa-a-challenge-dataset-for-open-domain-question-answering/) proposed a model CNN-Cnt which could get a MAP of 0.65 on it. It compared it with several other models and claimed best results. We thought this was the theoretical/SOTA MAP value and the w2v model itself does decently good on it(0.62)
@@ -57,16 +108,15 @@ The initial paper which Introduced [WikiQA](https://www.microsoft.com/en-us/rese
 
 **Is such a scenario, is it worth gathering supervised data?** This is the main question. Seeing this, we felt like it wasn't really worth it and we should move onto some other work.
 
-# Secondary Conclusion
 We decided to go through a few more datasets to make sure this low performance isn't specific to the WikiQA dataset.
 For this, we considered [this gist](https://github.com/sebastianruder/NLP-progress/blob/master/semantic_textual_similarity.md) which shares a lot of papers and datasets in NLP. Going through the papers, my attention was caught by some of the MAP values suggested by the papers.
 
 [Bilateral Multi-Perspective Matching for Natural Language Sentences(BiMPM)](https://arxiv.org/pdf/1702.03814.pdf) paper shows a MAP of **0.71** on WikiQA.
 The BiMPM paper cited another paper [SequenceMatchSequence](https://arxiv.org/pdf/1611.01747.pdf) which claimed an even higher MAP of **0.74** on WikiQA.
 
-![alt](https://aneesh-joshi.github.io/pic1.png)
+![alt](images/pic1.png)
 
-![alt](https://aneesh-joshi.github.io/pic2.png)
+![alt](images/pic2.png)
 
 These are almost **1.2** more than our w2v baseline.
 
@@ -95,9 +145,39 @@ The author makes some notable claims in it's abstract:
 >We show that the task of question answering (QA) can significantly benefit from the transfer learning of models trained on a different large, fine-grained QA dataset. We achieve the state of the art in two well-studied QA datasets, WikiQA and SemEval-2016 (Task 3A), through a basic transfer learning technique from SQuAD. 
 **For WikiQA, our model outperforms the previous best model by more than 8%.** We demonstrate that finer supervision provides better guidance for learning lexical and syntactic information than coarser supervision, through quantitative results and visual analysis. We also show that a similar transfer learning procedure achieves the state of the art on an entailment task.
 
+
+So, how this model works is
+It takes an existing model for QA called [BiDirectional Attention Flow (BiDAF)](https://theneuralperspective.com/2017/01/08/bidirectional-attention-flow-for-machine-comprehension/), which would take in a query and a context. It would then predict the range/span of words in the context which is relevant to the query. It was adapted to the [SQUAD](TODO) dataset.
+
+Example of SQUAD:
+![SQUAD](images/squad)
+
+The QA-Transfer takes the BiDAF net and chops off the last layer to make it more QA like, ie., something more like WikiQA:
+```
+q1 - d1 - 0
+q1 - d2 - 0
+q1 - d3 - 1
+q1 - d4 - 0
+```
+They call this modified network BiDAF-T
+
+Then, they take the SQUAD dataset and break the context into sentences and labels each sentence as relevant or irrelevant. This new dataset is called SQUAD-T
+
+The new model, BiDAF-T is then trained on SQUAD-T.
+When this model is evaluated on WikiQA, it gets **MAP : 0.75**
+They then take the train set of WikiQA and train BiDAF-T further.
+That's when in gets **MAP : 0.83**
+
+They call it Transfer Learning.
+
+So, as such, it's not exactly a new model. It's just  an old model(BiDAF), trained on a modified dataset and then used on WikiQA and SentEval. However, the model does suprisingly well on both of them.
+The author has provided their own repo.
+
+Since there is a QA Transfer from SQUAD, it might not always work on non english words. In that case, it's better to try an older method like BiMPM or SeqMatchSeq
+
 At this point, I am mostly skeptical. But if it works, **0.62 of word2vec -> 0.83 (almost 0.21)** seems pretty good.
 
-![alt](https://aneesh-joshi.github.io/pic3.png)
+![alt](images/pic3.png)
 
 I can only wonder if tomorrow, I will stumble upon a newer paper with 0.9!
 
