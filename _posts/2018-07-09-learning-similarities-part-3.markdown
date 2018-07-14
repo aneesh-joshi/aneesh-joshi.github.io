@@ -11,6 +11,10 @@ map | 0.6277 | 0.6515 | 0.5276 | 0.6259 | 0.3856
 gm_map | 0.4968 | 0.5147 | 0.3923 | 0.4966 | 0.269
 Rprec | 0.4667 | 0.5089 | 0.3429 | 0.4613 | 0.1965
 
+Metric | Full form
+map | Mean Average Precision
+gmap | Geometric Mean Average Precision
+Rprec | Reciprocal Precision
 
 # Approach
 Before implementing any models, we decided to set up an evaluation pipeline. Evaluating the models, however needed them to be implemented. Luckily, we have a repository, [MatchZoo](https://github.com/faneshion/MatchZoo), which had the models implemented.
@@ -19,9 +23,61 @@ Although, the repo was providing its own evaluation metrics, they couldn't be tr
 Based on these results:
 ![results](https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/ranged%20benchmarks%20mz.PNG)
 
-we decided to implement DRMM_TKS model since it gave the best results.
+
+We decided to implement DRMM_TKS model since it gave the best results.
+
+
 Unfortunately, at the time, it didn't cross my mind to evaluate the 300 dimensional word vectors. (The evaluation you see is for 50 dims. I made the naive assumption that the numbers will be similar irrespective of dims). Later inspection revealed that 300 dim glove vectors gets 0.62 MAP.
 
+Moreover, the way of implementing MAP was probably a bit wrong. Below is a table of a newer evaluation with proper metrics. More on evaluations can be found at the ending sections.
+
+
+WikiQA test set | w2v 50 dim | w2v 100 dim | w2v 200 dim | w2v 300 dim | MatchPyramid | FT 300 dim | DRMM_TKS
+-- | -- | -- | -- | -- | -- | -- | --
+map | 0.6016 | 0.6148 | 0.6285 | 0.6277 | **0.6406** | 0.6199 | 0.6311
+gm_map | 0.4642 | 0.4816 | 0.4972 | 0.4968 | **0.5041** | 0.4763 | 0.4928
+Rprec | 0.4318 | 0.4551 | 0.4709 | 0.4667 | **0.4918** | 0.4715 | 0.4752
+bpref | 0.4251 | 0.4457 | 0.4613 | 0.456 | **0.4886** | 0.4642 | 0.4768
+recip_rank | 0.6147 | 0.628 | 0.6419 | 0.6373 | **0.6471** | 0.6336 | 0.6401
+iprec_at_recall_0.00 | 0.6194 | 0.6322 | 0.6469 | 0.6437 | **0.6543** | 0.6375 | 0.6447
+iprec_at_recall_0.10 | 0.6194 | 0.6322 | 0.6469 | 0.6437 | **0.6543** | 0.6375 | 0.6447
+iprec_at_recall_0.20 | 0.6194 | 0.6322 | 0.6469 | 0.6437 | **0.6543** | 0.6375 | 0.6447
+iprec_at_recall_0.30 | 0.6146 | 0.6269 | 0.6431 | 0.6401 | **0.6505** | 0.6314 | 0.6447
+iprec_at_recall_0.40 | 0.6125 | 0.6269 | 0.6404 | 0.6394 | **0.6474** | 0.6293 | 0.6425
+iprec_at_recall_0.50 | 0.6125 | 0.6269 | 0.6404 | 0.6394 | **0.6474** | 0.6293 | 0.6425
+iprec_at_recall_0.60 | 0.5937 | 0.6068 | 0.6196 | 0.6219 | **0.6393** | 0.6115 | 0.6255
+iprec_at_recall_0.70 | 0.5937 | 0.6068 | 0.6196 | 0.6219 | **0.6393** | 0.6115 | 0.6255
+iprec_at_recall_0.80 | 0.5914 | 0.6039 | 0.6175 | 0.619 | **0.6368** | 0.6094 | 0.6216
+iprec_at_recall_0.90 | 0.5914 | 0.6039 | 0.6175 | 0.619 | **0.6368** | 0.6094 | 0.6216
+iprec_at_recall_1.00 | 0.5914 | 0.6039 | 0.6175 | 0.619 | **0.6368** | 0.6094 | 0.6216
+P_5 | 0.1893 | 0.1951 | 0.1967 | 0.1975 | **0.1984** | 0.1926 | 0.1959
+P_10 | 0.1107 | 0.1111 | 0.1119 | 0.114 | **0.1165** | 0.1119 | 0.114
+P_15 | 0.0774 | 0.0776 | 0.0787 | 0.0787 | **0.0787** | 0.0774 | 0.0785
+P_20 | 0.0595 | 0.0597 | 0.0597 | 0.0597 | **0.0599** | 0.0591 | 0.0597
+ndcg_cut_1 | 0.4403 | 0.4486 | 0.4691 | 0.4587 | **0.4938** | 0.4774 | 0.4876
+ndcg_cut_3 | 0.5867 | 0.6077 | 0.6213 | 0.626 | **0.6261** | 0.6033 | 0.6209
+ndcg_cut_5 | 0.6417 | 0.6598 | 0.6722 | 0.6743 | **0.6774** | 0.6593 | 0.6684
+ndcg_cut_10 | 0.6825 | 0.693 | 0.7055 | 0.7102 | **0.7228** | 0.6982 | 0.7108
+ndcg_cut_20 | 0.6993 | 0.7101 | 0.7208 | 0.7211 | **0.728** | 0.7115 | 0.7223
+
+
+Metric | Full form
+map | Mean Average Precision
+gmap | Geometric Mean Average Precision
+Rprec | Reciprocal Precision
+P_K | Precision at K
+nDCG_cut_k | normalized discounted cumulative gain at cut k
+iprec_at_recall_k |  interpolated precision at standard recall level k
+recip_rank | reciprocal rank
+bref | 
+
+
+A full description can be found [here](https://trec.nist.gov/pubs/trec16/appendices/measures.pdf)
+
+
+**GMAP** is the geometric mean of per-topic average precision, in contrast with MAP which is the arithmetic mean. If a run doubles the average precision for topic A from 0.02 to 0.04, while decreasing topic B from 0.4 to 0.38, the arithmetic mean is unchanged, but the geometric mean will show an improvment.
+
+**Bpref** is a preference-based information retrieval measure that considers whether relevant documents are ranked above irrelevant ones. It is designed to be robust to missing relevance judgments, such that it gives the same experimental outcome with incomplete judgments that Mean Average Precision would with complete judgments.
 
 # Datasets
 ## About WikiQA
@@ -67,13 +123,16 @@ Q2 | How are the directions of the velocity and force vectors related in a circu
 
 
 ## WikiQA Statistics:
-Total Queries : 1242
-Train Queries(80%) : 873
-Test Queries(20%) : 263
-Dev Queries(10%) : 126
+Split | Number of items
+Total Queries | 1242
+Train Queries(80%) | 873
+Test Queries(20%) | 263
+Dev Queries(10%) | 126
 
 ## About other datasets not used
-The table below summarizes WikiQA and some other datasets like TODO
+The table below summarizes WikiQA and some other datasets like:
+
+![alt](images/dataset_description)
 
 ## Why WikiQA
 For the task of similarity learning, we are evaluating on the WikiQA Dataset. The MAP value of the WikiQA dataset shows a correlation across datasets. The idea was, do well on WikiQA and it should do well across different datasets. Also, we have an existing repo which had code and benchmarks written around [WikiQA](https://github.com/faneshion/MatchZoo).
@@ -93,7 +152,7 @@ test split(20%) of WikiQA is 0.62
 dev split(10%) of WikiQA is 0.62
 
 # DRMM TKS
-The Deep Relevance Matching Model(Top K Solutions) is a variant of the DRMM model. Although it's not published as a paper, the author of the paper released the code along with the DRMM code in the [MatchZoo](https://github.com/faneshion/MatchZoo) repo. Our initial evaluation showed the best result of 0.65 MAP. However, after intensive parameter tuning, this value hasn't been reached on our model. Our model manages to get a MAP score of 0.63 on the test set and 0.66 on the dev set.
+The Deep Relevance Matching Model(Top K Solutions) is a variant of the DRMM model. Although it's not published as a paper, the author of the paper released the code along with the DRMM code (which is a paper)  in the [MatchZoo](https://github.com/faneshion/MatchZoo) repo. Our initial evaluation showed the best result of 0.65 MAP. However, after intensive parameter tuning, this value hasn't been reached on our model. Our model manages to get a MAP score of **0.63** on the test set and **0.66** on the dev set.
 [Link to Paper](https://arxiv.org/pdf/1711.08611.pdf)
 
 # MatchPyramid
@@ -114,9 +173,9 @@ For this, we considered [this gist](https://github.com/sebastianruder/NLP-progre
 [Bilateral Multi-Perspective Matching for Natural Language Sentences(BiMPM)](https://arxiv.org/pdf/1702.03814.pdf) paper shows a MAP of **0.71** on WikiQA.
 The BiMPM paper cited another paper [SequenceMatchSequence](https://arxiv.org/pdf/1611.01747.pdf) which claimed an even higher MAP of **0.74** on WikiQA.
 
-![alt](images/pic1.png)
+![alt](https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/pic1.png)
 
-![alt](images/pic2.png)
+![alt](https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/pic2.png)
 
 These are almost **1.2** more than our w2v baseline.
 
@@ -150,6 +209,7 @@ So, how this model works is
 It takes an existing model for QA called [BiDirectional Attention Flow (BiDAF)](https://theneuralperspective.com/2017/01/08/bidirectional-attention-flow-for-machine-comprehension/), which would take in a query and a context. It would then predict the range/span of words in the context which is relevant to the query. It was adapted to the [SQUAD](TODO) dataset.
 
 Example of SQUAD:
+
 ![SQUAD](images/squad)
 
 The QA-Transfer takes the BiDAF net and chops off the last layer to make it more QA like, ie., something more like WikiQA:
@@ -177,7 +237,7 @@ Since there is a QA Transfer from SQUAD, it might not always work on non english
 
 At this point, I am mostly skeptical. But if it works, **0.62 of word2vec -> 0.83 (almost 0.21)** seems pretty good.
 
-![alt](images/pic3.png)
+![alt](https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/pic3.png)
 
 I can only wonder if tomorrow, I will stumble upon a newer paper with 0.9!
 
