@@ -58,7 +58,6 @@ P_K | Precision at K
 nDCG_cut_k | normalized discounted cumulative gain at cut k
 iprec_at_recall_k |  interpolated precision at standard recall level k
 recip_rank | reciprocal rank
-bref | 
 
 
 A full description can be found [here](https://trec.nist.gov/pubs/trec16/appendices/measures.pdf)
