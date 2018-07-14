@@ -5,17 +5,6 @@ date:   2018-09-12 20:37:25 +2038
 categories: jekyll update
 ---
 
-WikiQA test set | w2v 300 dim | MP | FT 300 dim | DRMM_TKS | biMPM
--- | -- | -- | -- | -- | --
-map | 0.6277 | 0.6515 | 0.5276 | 0.6259 | 0.3856
-gm_map | 0.4968 | 0.5147 | 0.3923 | 0.4966 | 0.269
-Rprec | 0.4667 | 0.5089 | 0.3429 | 0.4613 | 0.1965
-
-Metric | Full form
-map | Mean Average Precision
-gmap | Geometric Mean Average Precision
-Rprec | Reciprocal Precision
-
 # Approach
 Before implementing any models, we decided to set up an evaluation pipeline. Evaluating the models, however needed them to be implemented. Luckily, we have a repository, [MatchZoo](https://github.com/faneshion/MatchZoo), which had the models implemented.
 Although, the repo was providing its own evaluation metrics, they couldn't be trusted. So, we set up our evaluation script which can be found in my [Evaluation Repo](https://github.com/aneesh-joshi/Similarity-Learning-Evaluation-Scripts). The script basically gets the output in the TREC format and evaluates it.
@@ -132,7 +121,7 @@ Dev Queries(10%) | 126
 ## About other datasets not used
 The table below summarizes WikiQA and some other datasets like:
 
-![alt](images/dataset_description)
+![alt](https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/dataset_description.png)
 
 ## Why WikiQA
 For the task of similarity learning, we are evaluating on the WikiQA Dataset. The MAP value of the WikiQA dataset shows a correlation across datasets. The idea was, do well on WikiQA and it should do well across different datasets. Also, we have an existing repo which had code and benchmarks written around [WikiQA](https://github.com/faneshion/MatchZoo).
@@ -210,7 +199,7 @@ It takes an existing model for QA called [BiDirectional Attention Flow (BiDAF)](
 
 Example of SQUAD:
 
-![SQUAD](images/squad)
+![SQUAD](https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/squad.png)
 
 The QA-Transfer takes the BiDAF net and chops off the last layer to make it more QA like, ie., something more like WikiQA:
 ```
