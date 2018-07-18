@@ -9,15 +9,15 @@ categories: jekyll update
 
 Dataset Name | Link | Suggested Metrics | Some Papers that use the dataset | Brief Description
 -- | -- | -- | -- | --
-WikiQA | <ul><li>[Dataset](https://download.microsoft.com/download/E/5/F/E5FCFCEE-7005-4814-853D-DAA7C66507E0/WikiQACorpus.zip)</li><li>[Paper](https://aclweb.org/anthology/D15-1237)</li></ul> | <ul><li>MAP</li><li>MRR</li></ul> | <ul><li>SeqMatchSeq</li><li>BiMPM</li><li>QA-Transfer</li></ul> | Question-Candidate_Answer1_to_N-Relevance1_to_N
-SQUAD 2.0 | [Website](https://rajpurkar.github.io/SQuAD-explorer/) | <ul><li>Exact Match</li><li>F1</li></ul> | QA-Transfer | Question-Context-Answer_Range_in_context
-Quora Duplicate Question Pairs | <ul><li>gensim-data(quora-duplicate-questions)</li><li>[Quora Official](https://data.quora.com/First-Quora-Dataset-Release-Question-Pairs)</li><li>[Kaggle](https://www.kaggle.com/c/quora-question-pairs)</li></ul> | Accuracy, F1 | BiMPM(88%), | Q1-Q2-DuplicateProbablity
-Sem Eval 2016 Task 3A | genism-data(semeval-2016-2017-task3-subtaskA-unannotated) | <ul><li>MAP</li><li>AvgRecall</li><li>MRR</li><li>P</li><li>R</li><li>F1</li><li>Acc</li> | QA-Transfer | Question-Comment-SimilarityProbablity
-MovieQA | <ul><li>[Paper](http://movieqa.cs.toronto.edu/static/files/CVPR2016_MovieQA.pdf)</li><li>[Website](http://movieqa.cs.toronto.edu/home/)</li></ul> | Accuracy | QA-Transfer | Plot-Question-Candidate_Answers
-InsuranceQA | [Website](https://github.com/shuzi/insuranceQA) | Accuracy | QA-Transfer | Question-Ground_Truth_Answer-Candidate_answer
-SNLI | <ul><li>[Paper](https://nlp.stanford.edu/pubs/snli_paper.pdf)</li><li>[Website](https://nlp.stanford.edu/projects/snli/)</li></ul> | Accuracy | QA-Transfer | Text-Hypothesis-Judgement
-TRECQA | https://aclweb.org/aclwiki/Question_Answering_(State_of_the_art), https://github.com/castorini/data/tree/master/TrecQA, http://cs.jhu.edu/~xuchen/packages/jacana-qa-naacl2013-data-results.tar.bz2 | <ul><li>MAP</li><li>MRR</li></ul> | BiMPM(MAP:0.802, MRR:0.875) | Question-Candidate_Answer1_to_N-relevance1_to_N
-SICK | [Website](http://clic.cimec.unitn.it/composes/sick.html) | Accuracy | QA-Transfer | sent1-sent2-entailment_label-relatedness_score
+WikiQA | <ul><li>[Dataset](https://download.microsoft.com/download/E/5/F/E5FCFCEE-7005-4814-853D-DAA7C66507E0/WikiQACorpus.zip)</li><li>[Paper](https://aclweb.org/anthology/D15-1237)</li></ul> | <ul><li>MAP</li><li>MRR</li></ul> | <ul><li>SeqMatchSeq(`MULT` MAP=0.74, MRR=0.75)</li><li>BiMPM(MAP=0.71, MRR=0.73)</li><li>QA-Transfer(`SQUAD*` MAP=0.83, MRR=84.58, P@1=75.31)</li></ul> | Question-Candidate_Answer1_to_N-Relevance1_to_N
+SQUAD 2.0 | [Website](https://rajpurkar.github.io/SQuAD-explorer/) | <ul><li>Exact Match</li><li>F1</li></ul> | QA-Transfer(for pretraining) | Question-Context-Answer_Range_in_context
+Quora Duplicate Question Pairs | <ul><li>gensim-data(quora-duplicate-questions)</li><li>[Quora Official](https://data.quora.com/First-Quora-Dataset-Release-Question-Pairs)</li><li>[Kaggle](https://www.kaggle.com/c/quora-question-pairs)</li></ul> | Accuracy, F1 | <ul><li>BiMPM(Acc=88.17%)</li><ul> | Q1-Q2-DuplicateProbablity
+Sem Eval 2016 Task 3A | genism-data(semeval-2016-2017-task3-subtaskA-unannotated) | <ul><li>MAP</li><li>AvgRecall</li><li>MRR</li><li>P</li><li>R</li><li>F1</li><li>Acc</li> | QA-Transfer(`SQUAD*` MAP=80.2, MRR=86.4, P@1=89.1) | Question-Comment-SimilarityProbablity
+MovieQA | <ul><li>[Paper](http://movieqa.cs.toronto.edu/static/files/CVPR2016_MovieQA.pdf)</li><li>[Website](http://movieqa.cs.toronto.edu/home/)</li></ul> | Accuracy | SeqMatchSeq(`SUBMULT+NN` test=72.9%, dev=72.1%) | Plot-Question-Candidate_Answers
+InsuranceQA | [Website](https://github.com/shuzi/insuranceQA) | Accuracy | SeqMatchSeq(`SUBMULT+NN` test1=75.6%, test2=72.3%, dev=77%) | Question-Ground_Truth_Answer-Candidate_answer
+SNLI | <ul><li>[Paper](https://nlp.stanford.edu/pubs/snli_paper.pdf)</li><li>[Website](https://nlp.stanford.edu/projects/snli/)</li></ul> | Accuracy | <ul><li>QA-Transfer(for pretraining)</li><li>SeqMatchSeq(`SUBMULT+NN` train=89.4%, test=86.8%)</li><li>BiMPM()`Ensemble` Acc=88.8%)</li></ul> | Text-Hypothesis-Judgement
+TRECQA | <ul><li>https://aclweb.org/aclwiki/Question_Answering_(State_of_the_art)</li><li>https://github.com/castorini/data/tree/master/TrecQA</li><li>http://cs.jhu.edu/~xuchen/packages/jacana-qa-naacl2013-data-results.tar.bz2</li></ul> | <ul><li>MAP</li><li>MRR</li></ul> | BiMPM(MAP:0.802, MRR:0.875) | Question-Candidate_Answer1_to_N-relevance1_to_N
+SICK | [Website](http://clic.cimec.unitn.it/composes/sick.html) | Accuracy | QA-Transfer(Acc=88.2) | sent1-sent2-entailment_label-relatedness_score
 
 
 More dataset info can be found at the [SentEval](https://github.com/facebookresearch/SentEval) repo.
