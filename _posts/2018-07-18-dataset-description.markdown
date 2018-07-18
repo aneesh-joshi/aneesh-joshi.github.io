@@ -1,10 +1,9 @@
 ---
 layout: post
 title:  "Datasets for Similarity Learning"
-date:   2018-18-07 19:24:25 +1924
+date:   2018-07-18 19:24:25 +1924
 categories: jekyll update
 ---
-
 
 # Dataset Description for Similarity Learning
 
