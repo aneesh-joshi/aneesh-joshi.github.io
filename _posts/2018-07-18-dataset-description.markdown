@@ -8,7 +8,6 @@ categories: jekyll update
 
 # Dataset Description for Similarity Learning
 
-
 Dataset Name | Link | Suggested Metrics | Some Papers that use the dataset | Brief Description
 -- | -- | -- | -- | --
 WikiQA | <ul><li>[Dataset](https://download.microsoft.com/download/E/5/F/E5FCFCEE-7005-4814-853D-DAA7C66507E0/WikiQACorpus.zip)</li><li>[Paper](https://aclweb.org/anthology/D15-1237)</li></ul> | <ul><li>MAP</li><li>MRR</li></ul> | <ul><li>SeqMatchSeq</li><li>BiMPM</li><li>QA-Transfer</li></ul> | Question-Candidate_Answer1_to_N-Relevance1_to_N
