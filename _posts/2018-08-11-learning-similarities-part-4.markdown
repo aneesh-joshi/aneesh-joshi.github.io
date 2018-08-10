@@ -124,7 +124,7 @@ we find the average precision for every `q_i` and then take the mean over all th
 
 Mean (Over all the queries) Average Precision(Over all the docs for a query)
 
-![alt](_images/MAP_formula.png)
+![alt](https://raw.githubusercontent.com/aneesh-joshi/Similarity-Learning-Evaluation-Scripts/master/_images/MAP_formula.png)
 
 Some psuedo code to describe the idea:
 
@@ -146,7 +146,7 @@ We will sort our predictions based on our similarity score (Since our ordering/r
 
 	Average Precision = (Sum (Precision@k * relevance@k) for k=1 to n) / Number of Relevant documents
 
-![alt](_images/AvgPrecFormula.png)
+![alt](https://raw.githubusercontent.com/aneesh-joshi/Similarity-Learning-Evaluation-Scripts/master/_images/AvgPrecFormula.png)
 
 <br/>where<br/>
 
@@ -591,7 +591,7 @@ This can be remodelled such that:
 
 Effectively, we get a really big good dataset in the QA domain. The converted file is almost 110 MB.
 
-![alt](_images/Bidaf_T_scores.png)
+![alt](https://raw.githubusercontent.com/aneesh-joshi/Similarity-Learning-Evaluation-Scripts/master/_images/Bidaf_T_scores.png)
 
 The new model, BiDAF-T is then trained on SQUAD-T. It gets **MAP : 0.75** on WikiQA test set.  
 When BiDAF-T is finetuned on WikiQA, it gets **MAP : 0.76**  
