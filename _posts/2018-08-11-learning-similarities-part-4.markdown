@@ -316,7 +316,7 @@ I tried to reproduce their results using their scripts but found that the scores
 
 I developed a table with my baselines as below:
 
-![alt](https://github.com/aneesh-joshi/aneesh-joshi.github.io/blob/master/_posts/images/ranged%20benchmarks%20mz.PNG)
+![alt](https://github.com/aneesh-joshi/aneesh-joshi.github.io/blob/master/_posts/images/ranged%20benchmarks%20mz.PNG?raw=true)
 
 **Note:** the values are different from the established baseline because there is some discrepancy on how MAP should be calculated. I initially used my implementation of it for the table. Later, I moved to that provided by trec.
 This is how I implement it:
