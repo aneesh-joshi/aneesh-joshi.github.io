@@ -1,3 +1,10 @@
+---
+layout: post
+title:  "Learning Similarities - Part 4 (Final)"
+date:   2018-08-11 20:37:25 +2038
+categories: jekyll update
+---
+
 # Similarity Learning using Neural Networks
 
 ## Index
