@@ -1,10 +1,3 @@
----
-layout: post
-title:  "Learning Similarities - Part 4 (Final)"
-date:   2018-08-11 20:37:25 +2038
-categories: jekyll update
----
-
 # Similarity Learning using Neural Networks
 
 ## Index
@@ -126,11 +119,13 @@ Mean (Over all the queries) Average Precision(Over all the docs for a query)
 
 Some psuedo code to describe the idea:
 
-	num_queries = len(queries)
-	precision = 0
-	for q, candidate_docs in zip(queries, docs):
-	    precision += average_precision(q, candidate_docs)
-	mean_average_precision = precision / num_queries
+```
+num_queries = len(queries)
+precision = 0
+for q, candidate_docs in zip(queries, docs):
+    precision += average_precision(q, candidate_docs)
+mean_average_precision = precision / num_queries
+```
 
 I will solve an example here:
 
@@ -301,7 +296,7 @@ In our journey of developing a similarity learning model, we first decided to us
 ### Word2Vec Baseline
 To understand the level of improvement we could make, we set up a baseline using word2vec. We use the average of word vectors in a sentence to get the vector for a sentence/document.
 
-	"Hello World" -> (vec("Hello") + vec("World"))/2
+```"Hello World" -> (vec("Hello") + vec("World"))/2```
 
 When 2 documents are to be compared for similarity/relevance, we take the Cosine Similarity between their vectors as their similarity. (300 dimensional vectors were seen to perform the best, so we chose them.)
 
@@ -319,69 +314,73 @@ I developed a table with my baselines as below:
 **Note:** the values are different from the established baseline because there is some discrepancy on how MAP should be calculated. I initially used my implementation of it for the table. Later, I moved to that provided by trec.
 This is how I implement it:
 
-	def mapk(Y_true, Y_pred):
-	    """Calculates Mean Average Precision(MAP) for a given set of Y_true, Y_pred
 
-	    Note: Currently doesn't support mapping at k. Couldn't use only map as it's a
-	    reserved word
+```
+def mapk(Y_true, Y_pred):
+    """Calculates Mean Average Precision(MAP) for a given set of Y_true, Y_pred
 
-	    Parameters
-	    ----------
-	    Y_true : numpy array or list of ints either 1 or 0
-	        Contains the true, ground truth values of the relevance between a query and document
-	    Y_pred : numpy array or list of floats
-	        Contains the predicted similarity score between a query and document
+    Note: Currently doesn't support mapping at k. Couldn't use only map as it's a
+    reserved word
 
-	    Examples
-	    --------
-	    >>> Y_true = [[0, 1, 0, 1], [0, 0, 0, 0, 1, 0], [0, 1, 0]]
-	    >>> Y_pred = [[0.1, 0.2, -0.01, 0.4], [0.12, -0.43, 0.2, 0.1, 0.99, 0.7], [0.5, 0.63, 0.92]]
-	    >>> print(mapk(Y_true, Y_pred))
-	    0.75
-	    """
+    Parameters
+    ----------
+    Y_true : numpy array or list of ints either 1 or 0
+        Contains the true, ground truth values of the relevance between a query and document
+    Y_pred : numpy array or list of floats
+        Contains the predicted similarity score between a query and document
 
-	    aps = []
-	    n_skipped = 0
-	    for y_true, y_pred in zip(Y_true, Y_pred):
-	        # skip datapoints where there is no solution
-	        if np.sum(y_true) < 1:
-	            n_skipped += 1
-	            continue
+    Examples
+    --------
+    >>> Y_true = [[0, 1, 0, 1], [0, 0, 0, 0, 1, 0], [0, 1, 0]]
+    >>> Y_pred = [[0.1, 0.2, -0.01, 0.4], [0.12, -0.43, 0.2, 0.1, 0.99, 0.7], [0.5, 0.63, 0.92]]
+    >>> print(mapk(Y_true, Y_pred))
+    0.75
+    """
 
-	        pred_sorted = sorted(zip(y_true, y_pred), key=lambda x: x[1], reverse=True)
-	        avg = 0
-	        n_relevant = 0
+    aps = []
+    n_skipped = 0
+    for y_true, y_pred in zip(Y_true, Y_pred):
+        # skip datapoints where there is no solution
+        if np.sum(y_true) < 1:
+            n_skipped += 1
+            continue
 
-	        for i, val in enumerate(pred_sorted):
-	            if val[0] == 1:
-	                avg += 1. / (i + 1.)
-	                n_relevant += 1
+        pred_sorted = sorted(zip(y_true, y_pred), key=lambda x: x[1], reverse=True)
+        avg = 0
+        n_relevant = 0
 
-	        if n_relevant != 0:
-	            ap = avg / n_relevant
-	            aps.append(ap)
-	    return np.mean(np.array(aps))
+        for i, val in enumerate(pred_sorted):
+            if val[0] == 1:
+                avg += 1. / (i + 1.)
+                n_relevant += 1
 
+        if n_relevant != 0:
+            ap = avg / n_relevant
+            aps.append(ap)
+    return np.mean(np.array(aps))
+```
 
 This is how it's implemented in MatchZoo:
 
-	def map(y_true, y_pred, rel_threshold=0):
-	    s = 0.
-	    y_true = _to_list(np.squeeze(y_true).tolist())
-	    y_pred = _to_list(np.squeeze(y_pred).tolist())
-	    c = list(zip(y_true, y_pred))
-	    random.shuffle(c)
-	    c = sorted(c, key=lambda x:x[1], reverse=True)
-	    ipos = 0
-	    for j, (g, p) in enumerate(c):
-	        if g > rel_threshold:
-	            ipos += 1.
-	            s += ipos / ( j + 1.)
-	    if ipos == 0:
-	        s = 0.
-	    else:
-	        s /= ipos
-	    return s
+```
+def map(y_true, y_pred, rel_threshold=0):
+    s = 0.
+    y_true = _to_list(np.squeeze(y_true).tolist())
+    y_pred = _to_list(np.squeeze(y_pred).tolist())
+    c = list(zip(y_true, y_pred))
+    random.shuffle(c)
+    c = sorted(c, key=lambda x:x[1], reverse=True)
+    ipos = 0
+    for j, (g, p) in enumerate(c):
+        if g > rel_threshold:
+            ipos += 1.
+            s += ipos / ( j + 1.)
+    if ipos == 0:
+        s = 0.
+    else:
+        s /= ipos
+    return s
+```
 
 The above has a random shuffle because it prevents false numbers. Refer to [this](https://github.com/faneshion/MatchZoo/issues/232) issue.
 
@@ -403,38 +402,46 @@ This loss function is especially good for Ranking Problems. More details can be 
 
 Let's look at the keras definitions to get a better idea of the intuition
 
-	def hinge(y_true, y_pred):
-	    return K.mean(K.maximum(1. - y_true * y_pred, 0.), axis=-1)
+```
+def hinge(y_true, y_pred):
+    return K.mean(K.maximum(1. - y_true * y_pred, 0.), axis=-1)
+```
 
 In this case, the y_true can be {1, -1}
 For example, y_true = [1 , -1, 1] , y_pred = [0.6, 0.1, -0.9]
 
-	K.mean(K.maximum(1 - [1, -1, 1] * [0.6, 0.1, -0.9], 0))
-	= K.mean(K.maximum(1 - [0.6, -0.1, -0.9], 0))
-	= K.mean(K.maximum([0.4, 1.1, 1.9], 0))
-	= K.mean([0.4, 1.1, 1.9])
-
+```
+K.mean(K.maximum(1 - [1, -1, 1] * [0.6, 0.1, -0.9], 0))
+= K.mean(K.maximum(1 - [0.6, -0.1, -0.9], 0))
+= K.mean(K.maximum([0.4, 1.1, 1.9], 0))
+= K.mean([0.4, 1.1, 1.9])
+```
 Effectively, the more wrong answers contribute more to the loss
 
-	def categorical_hinge(y_true, y_pred):
-	    pos = K.sum(y_true * y_pred, axis=-1)
-	    neg = K.max((1.0 - y_true) * y_pred, axis=-1)
-	    return K.mean(K.maximum(0.0, neg - pos + 1), axis=-1)
+```
+def categorical_hinge(y_true, y_pred):
+    pos = K.sum(y_true * y_pred, axis=-1)
+    neg = K.max((1.0 - y_true) * y_pred, axis=-1)
+    return K.mean(K.maximum(0.0, neg - pos + 1), axis=-1)
+```
 
 In this case, there is a categorization, so the true values are one hots  
 For example, y_true = [[1, 0, 0], [0, 0, 1]], y_pred = [[0.8, 0.1, 0.1], [0.7, 0.2, 0.1]]
 
-	pos = K.sum([[1, 0, 0], [0, 0, 1]] * [[0.9, 0.1, 0.1], [0.7, 0.2, 0.1]], axis=-1)
-	    = K.sum([[0.9, 0, 0], [0, 0, 0.1]], axis=-1)  # check the predictions for the correct answer
-	    = [0.9, 0.1]
-	neg = K.max((1.0 - [[1, 0, 0], [0, 0, 1]]) * [[0.8, 0.1, 0.1], [0.7, 0.2, 0.1]], axis=-1)
-	    = K.max([[0, 1, 1], [1, 1, 0]] * [[0.8, 0.1, 0.1], [0.7, 0.2, 0.1]], axis=-1)
-	    = K.max([[0, 0.1, 0.1], [0.7, 0.2, 0]], axis=-1)
-	    = [0.1, 0.7]
-	loss = K.mean(K.maximum(0.0, neg - pos + 1), axis=-1)
-	     = K.mean(K.maximum(0.0, [0.1, 0.7] - [0.9, 0.1] + 1), axis=-1)
-         = K.mean(K.maximum(0.0, [0.2, 1.6]), axis=-1)
-         = K.mean([0.2, 1.6])
+
+```
+pos = K.sum([[1, 0, 0], [0, 0, 1]] * [[0.9, 0.1, 0.1], [0.7, 0.2, 0.1]], axis=-1)
+    = K.sum([[0.9, 0, 0], [0, 0, 0.1]], axis=-1)  # check the predictions for the correct answer
+    = [0.9, 0.1]
+neg = K.max((1.0 - [[1, 0, 0], [0, 0, 1]]) * [[0.8, 0.1, 0.1], [0.7, 0.2, 0.1]], axis=-1)
+    = K.max([[0, 1, 1], [1, 1, 0]] * [[0.8, 0.1, 0.1], [0.7, 0.2, 0.1]], axis=-1)
+    = K.max([[0, 0.1, 0.1], [0.7, 0.2, 0]], axis=-1)
+    = [0.1, 0.7]
+loss = K.mean(K.maximum(0.0, neg - pos + 1), axis=-1)
+     = K.mean(K.maximum(0.0, [0.1, 0.7] - [0.9, 0.1] + 1), axis=-1)
+     = K.mean(K.maximum(0.0, [0.2, 1.6]), axis=-1)
+     = K.mean([0.2, 1.6])
+```
 
 Again, effectively, the more wrong value (0.7) contributes more to the loss, whereas the correct value(0.9) reduces it greatly
 
