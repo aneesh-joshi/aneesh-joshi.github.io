@@ -1,10 +1,3 @@
----
-layout: post
-title:  "Learning Similarities - Part 4 (Final)"
-date:   2018-08-11 20:37:25 +2038
-categories: jekyll update
----
-
 # Similarity Learning using Neural Networks
 
 ## Index
@@ -34,14 +27,12 @@ We have to develop a function, `similarity_fn` such that<br/>
 
 As such, Similarity Learning does not require Neural Networks (tf-idf and other such sentence representations can work as well). However, with the recent domination of Deep Learning in NLP, newer models have been performing the best on Similarity Learning tasks.
 
-The idea of finding similarities can be used in the following ways [1]:<br/>
+The idea of finding similarities can be used in the following ways :<br/>
 **1. Regresssion Similarity Learning:** given `document1` and `document2` we need a `similiarity measure` as a float value.
 
 **2. Classification Similarity Learning:** given `document1` and `document2` we need to classify them as similar or disimilar
 
 **3. Ranking Similarity Learning:** given `document`, `similar-document` and `disimilar-document`, we want to learn a `similarity_function` such that `similarity_function(document, similar-document)  > similarity_function(document, disimilar-document)`
-
-**4. Locality Sensitivity Hashing:** hashes input items so that similar items map to the same "buckets" in memory with high probability.
 
 
 <br/>Usually, the similarity can be measures like:
@@ -195,7 +186,7 @@ Therefore, Average Precision for q1
 To get Mean Average Precision, we calculate Average Precision for all `q`s in it and average it/take the mean.
 
 ### Normalized Discounted Cumulative Gain
-[This](https://en.wikipedia.org/wiki/Discounted_cumulative_gain) Wikipedia Article is a great source for understanding NDCG.
+[This Wikipedia Article](https://en.wikipedia.org/wiki/Discounted_cumulative_gain) is a great source for understanding NDCG.
 First, let's understand Discounted Cumulative Gain.
 > The premise of DCG is that highly relevant documents appearing lower in a search result list should be penalized as the graded relevance value is reduced logarithmically proportional to the position of the result.
 
@@ -231,14 +222,14 @@ In some cases for non-binary retrieval problem, we use both nDCG & mAP such as m
 #### About implementing MAP
 While the idea of the metric seems easy, there are varying implementations of it which can be found below in the section "MatchZoo Baselines". Ideally, the most trusted metric implementations should be the one provided by [TREC](https://en.wikipedia.org/wiki/Text_Retrieval_Conference) and I would imagine that's what people use when publishing results.
 
-###### About TREC and trec_eval
+#### About TREC and trec_eval
 The **T**ext**Re**trieval**C**onference(TREC) is an ongoing series of workshops focusing on a list of different information retrieval (IR) research areas, or tracks. They provide a standard method of evaluating QA systems called `trec_eval`. It's a C binary whose code can be found [here](https://github.com/usnistgov/trec_eval)
 
 
 Please refer to [this blog](http://www.rafaelglater.com/en/post/learn-how-to-use-trec_eval-to-evaluate-your-information-retrieval-system) to get a complete understanding of trec
 
 Here's the short version:  
-As the above tutorial link will tell, you will have to download the TREC evaluation code from https://trec.nist.gov/trec_eval/
+As the above tutorial link will tell, you will have to download the TREC evaluation code from [here](https://trec.nist.gov/trec_eval/)
 run `make` in the folder and it will produce the `trec_eval` binary.
 
 The binary requires 2 inputs:
@@ -469,27 +460,89 @@ We take two docs and try to rank them as compared to each other. "x1 is more rel
 Here, I will give examples of different datasets.
 
 
-Dataset Name | Link | Suggested Metrics | Some Papers that use the dataset | Brief Description
--- | -- | -- | -- | --
-WikiQA | <ul><li>[Dataset](https://download.microsoft.com/download/E/5/F/E5FCFCEE-7005-4814-853D-DAA7C66507E0/WikiQACorpus.zip)</li><li>[Paper](https://aclweb.org/anthology/D15-1237)</li></ul> | <ul><li>MAP</li><li>MRR</li></ul> | <ul><li>SeqMatchSeq(`MULT` MAP=0.74, MRR=0.75)</li><li>BiMPM(MAP=0.71, MRR=0.73)</li><li>QA-Transfer(`SQUAD*` MAP=0.83, MRR=84.58, P@1=75.31)</li></ul> | Question-Candidate_Answer1_to_N-Relevance1_to_N
-SQUAD 2.0 | [Website](https://rajpurkar.github.io/SQuAD-explorer/) | <ul><li>Exact Match</li><li>F1</li></ul> | QA-Transfer(for pretraining) | Question-Context-Answer_Range_in_context
-Quora Duplicate Question Pairs | <ul><li>gensim-data(quora-duplicate-questions)</li><li>[Quora Official](https://data.quora.com/First-Quora-Dataset-Release-Question-Pairs)</li><li>[Kaggle](https://www.kaggle.com/c/quora-question-pairs)</li></ul> | Accuracy, F1 | <ul><li>BiMPM(Acc=88.17%)</li><ul> | Q1-Q2-DuplicateProbablity
-Sem Eval 2016 Task 3A | genism-data(semeval-2016-2017-task3-subtaskA-unannotated) | <ul><li>MAP</li><li>AvgRecall</li><li>MRR</li><li>P</li><li>R</li><li>F1</li><li>Acc</li> | QA-Transfer(`SQUAD*` MAP=80.2, MRR=86.4, P@1=89.1) | Question-Comment-SimilarityProbablity
-MovieQA | <ul><li>[Paper](http://movieqa.cs.toronto.edu/static/files/CVPR2016_MovieQA.pdf)</li><li>[Website](http://movieqa.cs.toronto.edu/home/)</li></ul> | Accuracy | SeqMatchSeq(`SUBMULT+NN` test=72.9%, dev=72.1%) | Plot-Question-Candidate_Answers
-InsuranceQA | [Website](https://github.com/shuzi/insuranceQA) | Accuracy | SeqMatchSeq(`SUBMULT+NN` test1=75.6%, test2=72.3%, dev=77%) | Question-Ground_Truth_Answer-Candidate_answer
-SNLI | <ul><li>[Paper](https://nlp.stanford.edu/pubs/snli_paper.pdf)</li><li>[Website](https://nlp.stanford.edu/projects/snli/)</li></ul> | Accuracy | <ul><li>QA-Transfer(for pretraining)</li><li>SeqMatchSeq(`SUBMULT+NN` train=89.4%, test=86.8%)</li><li>BiMPM()`Ensemble` Acc=88.8%)</li></ul> | Text-Hypothesis-Judgement
-TRECQA | <ul><li>https://aclweb.org/aclwiki/Question_Answering_(State_of_the_art)</li><li>https://github.com/castorini/data/tree/master/TrecQA</li><li>http://cs.jhu.edu/~xuchen/packages/jacana-qa-naacl2013-data-results.tar.bz2</li></ul> | <ul><li>MAP</li><li>MRR</li></ul> | BiMPM(MAP:0.802, MRR:0.875) | Question-Candidate_Answer1_to_N-relevance1_to_N
-SICK | [Website](http://clic.cimec.unitn.it/composes/sick.html) | Accuracy | QA-Transfer(Acc=88.2) | sent1-sent2-entailment_label-relatedness_score
+<table>
+<thead>
+<tr>
+<th>Dataset Name</th>
+<th>Link</th>
+<th>Suggested Metrics</th>
+<th>Some Papers that use the dataset</th>
+<th>Brief Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WikiQA</td>
+<td><ul><li><a href="https://download.microsoft.com/download/E/5/F/E5FCFCEE-7005-4814-853D-DAA7C66507E0/WikiQACorpus.zip" rel="nofollow">Dataset</a></li><li><a href="https://aclweb.org/anthology/D15-1237" rel="nofollow">Paper</a></li></ul></td>
+<td><ul><li>MAP</li><li>MRR</li></ul></td>
+<td><ul><li>SeqMatchSeq(<code>MULT</code> MAP=0.74, MRR=0.75)</li><li>BiMPM(MAP=0.71, MRR=0.73)</li><li>QA-Transfer(<code>SQUAD*</code> MAP=0.83, MRR=84.58, P@1=75.31)</li></ul></td>
+<td>Question-Candidate_Answer1_to_N-Relevance1_to_N</td>
+</tr>
+<tr>
+<td>SQUAD 2.0</td>
+<td><a href="https://rajpurkar.github.io/SQuAD-explorer/" rel="nofollow">Website</a></td>
+<td><ul><li>Exact Match</li><li>F1</li></ul></td>
+<td>QA-Transfer(for pretraining)</td>
+<td>Question-Context-Answer_Range_in_context</td>
+</tr>
+<tr>
+<td>Quora Duplicate Question Pairs</td>
+<td><ul><li>gensim-data(quora-duplicate-questions)</li><li><a href="https://data.quora.com/First-Quora-Dataset-Release-Question-Pairs" rel="nofollow">Quora Official</a></li><li><a href="https://www.kaggle.com/c/quora-question-pairs" rel="nofollow">Kaggle</a></li></ul></td>
+<td>Accuracy, F1</td>
+<td><ul><li>BiMPM(Acc=88.17%)</li><ul></ul></ul></td>
+<td>Q1-Q2-DuplicateProbablity</td>
+</tr>
+<tr>
+<td>Sem Eval 2016 Task 3A</td>
+<td>genism-data(semeval-2016-2017-task3-subtaskA-unannotated)</td>
+<td><ul><li>MAP</li><li>AvgRecall</li><li>MRR</li><li>P</li><li>R</li><li>F1</li><li>Acc</li></ul></td>
+<td>QA-Transfer(<code>SQUAD*</code> MAP=80.2, MRR=86.4, P@1=89.1)</td>
+<td>Question-Comment-SimilarityProbablity</td>
+</tr>
+<tr>
+<td>MovieQA</td>
+<td><ul><li><a href="http://movieqa.cs.toronto.edu/static/files/CVPR2016_MovieQA.pdf" rel="nofollow">Paper</a></li><li><a href="http://movieqa.cs.toronto.edu/home/" rel="nofollow">Website</a></li></ul></td>
+<td>Accuracy</td>
+<td>SeqMatchSeq(<code>SUBMULT+NN</code> test=72.9%, dev=72.1%)</td>
+<td>Plot-Question-Candidate_Answers</td>
+</tr>
+<tr>
+<td>InsuranceQA</td>
+<td><a href="https://github.com/shuzi/insuranceQA">Website</a></td>
+<td>Accuracy</td>
+<td>SeqMatchSeq(<code>SUBMULT+NN</code> test1=75.6%, test2=72.3%, dev=77%)</td>
+<td>Question-Ground_Truth_Answer-Candidate_answer</td>
+</tr>
+<tr>
+<td>SNLI</td>
+<td><ul><li><a href="https://nlp.stanford.edu/pubs/snli_paper.pdf" rel="nofollow">Paper</a></li><li><a href="https://nlp.stanford.edu/projects/snli/" rel="nofollow">Website</a></li></ul></td>
+<td>Accuracy</td>
+<td><ul><li>QA-Transfer(for pretraining)</li><li>SeqMatchSeq(<code>SUBMULT+NN</code> train=89.4%, test=86.8%)</li><li>BiMPM()<code>Ensemble</code> Acc=88.8%)</li></ul></td>
+<td>Text-Hypothesis-Judgement</td>
+</tr>
+<tr>
+<td>TRECQA</td>
+<td><ul><li><a href="https://aclweb.org/aclwiki/Question_Answering_(State_of_the_art)" rel="nofollow">https://aclweb.org/aclwiki/Question_Answering_(State_of_the_art)</a></li><li><a href="https://github.com/castorini/data/tree/master/TrecQA">https://github.com/castorini/data/tree/master/TrecQA</a></li><li><a href="http://cs.jhu.edu/%7Exuchen/packages/jacana-qa-naacl2013-data-results.tar.bz2" rel="nofollow">http://cs.jhu.edu/~xuchen/packages/jacana-qa-naacl2013-data-results.tar.bz2</a></li></ul></td>
+<td><ul><li>MAP</li><li>MRR</li></ul></td>
+<td>BiMPM(MAP:0.802, MRR:0.875)</td>
+<td>Question-Candidate_Answer1_to_N-relevance1_to_N</td>
+</tr>
+<tr>
+<td>SICK</td>
+<td><a href="http://clic.cimec.unitn.it/composes/sick.html" rel="nofollow">Website</a></td>
+<td>Accuracy</td>
+<td>QA-Transfer(Acc=88.2)</td>
+<td>sent1-sent2-entailment_label-relatedness_score</td>
+</tr></tbody></table>
 
 
 More dataset info can be found at the [SentEval](https://github.com/facebookresearch/SentEval) repo.
 
 
-Model/Paper | Link
------------ | ----
-SeqMatchSeq | https://arxiv.org/pdf/1611.01747.pdf
-QA-Transfer | http://aclweb.org/anthology/P17-2081
-BiMPM | https://arxiv.org/pdf/1702.03814.pdf
+Links to Papers:
+- [SeqMatchSeq](https://arxiv.org/pdf/1611.01747.pdf)
+- [QA-Transfer](http://aclweb.org/anthology/P17-2081)
+- [BiMPM](https://arxiv.org/pdf/1702.03814.pdf)
 
 ### Some useful examples
 
@@ -528,7 +581,7 @@ Seeing that DRMM_TKS wasn't doing so well, I moved my attention to the next best
 
 It was around this point that we came to the realization that the score wasn't much more than the baseline and a score of `unsupervised baseline plus 0.15` would be needed to make it a worthwhile model to collect supervised data for.
 
-##### String of events leading to a change in models
+#### String of events leading to a change in models
 I started looking for other datasets and happened to stumble upon the [BiMPM](https://arxiv.org/abs/1702.03814) paper which claimed a score of 0.71 on WikiQA. In it's score comparison table
 
 ![alt](https://raw.githubusercontent.com/aneesh-joshi/aneesh-joshi.github.io/master/_posts/images/pic1.png)
@@ -631,33 +684,35 @@ I got 0.64 on average (getting a 0.67 at one point) but this isn't more than Mat
 
 ### WikiQA
 
-Metric | w2v 50 dim | w2v 100 dim | w2v 200 dim | w2v 300 dim | FT 300 dim | MatchPyramid | DRMM_TKS | MatchPyramid Random Baseline | DRMM_TKS Random Baseline | BiDAF only pretrain | BiDAF pretrain + finetune | BiDAF Random Baseline
+
+WikiQA test set | w2v 50 dim | w2v 100 dim | w2v 200 dim | w2v 300 dim | FT 300 dim | MatchPyramid | DRMM_TKS | MatchPyramid Random Baseline | DRMM_TKS Random Baseline | BiDAF only pretrain | BiDAF pretrain + finetune | BiDAF Random Baseline
 -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | --
-map | 0.6016 | 0.6148 | 0.6285 | 0.6277 | 0.6199 | 0.6463 | 0.6354 | 0.5107 | 0.5394 | 0.601 | 0.5948 | 0.3291
-gm_map | 0.4642 | 0.4816 | 0.4972 | 0.4968 | 0.4763 | 0.5071 | 0.4989 | 0.3753 | 0.4111 | 0.4538 | 0.4595 | 0.2455
-Rprec | 0.4318 | 0.4551 | 0.4709 | 0.4667 | 0.4715 | 0.5007 | 0.4801 | 0.3471 | 0.3512 | 0.4582 | 0.4355 | 0.1156
-bpref | 0.4251 | 0.4457 | 0.4613 | 0.456 | 0.4642 | 0.4977 | 0.4795 | 0.3344 | 0.3469 | 0.4502 | 0.4264 | 0.1101
-recip_rank | 0.6147 | 0.628 | 0.6419 | 0.6373 | 0.6336 | 0.6546 | 0.6437 | 0.519 | 0.5473 | 0.6169 | 0.6093 | 0.3312
-iprec_at_recall_0.00 | 0.6194 | 0.6322 | 0.6469 | 0.6437 | 0.6375 | 0.6602 | 0.648 | 0.5242 | 0.5534 | 0.6209 | 0.6134 | 0.3396
-iprec_at_recall_0.10 | 0.6194 | 0.6322 | 0.6469 | 0.6437 | 0.6375 | 0.6602 | 0.648 | 0.5242 | 0.5534 | 0.6209 | 0.6134 | 0.3396
-iprec_at_recall_0.20 | 0.6194 | 0.6322 | 0.6469 | 0.6437 | 0.6375 | 0.6602 | 0.648 | 0.5242 | 0.5534 | 0.6209 | 0.6134 | 0.3396
-iprec_at_recall_0.30 | 0.6146 | 0.6269 | 0.6431 | 0.6401 | 0.6314 | 0.6572 | 0.648 | 0.5213 | 0.5515 | 0.618 | 0.6082 | 0.3382
-iprec_at_recall_0.40 | 0.6125 | 0.6269 | 0.6404 | 0.6394 | 0.6293 | 0.6537 | 0.6458 | 0.5189 | 0.5488 | 0.6141 | 0.6069 | 0.3382
-iprec_at_recall_0.50 | 0.6125 | 0.6269 | 0.6404 | 0.6394 | 0.6293 | 0.6537 | 0.6458 | 0.5189 | 0.5488 | 0.6141 | 0.6069 | 0.3382
-iprec_at_recall_0.60 | 0.5937 | 0.6068 | 0.6196 | 0.6219 | 0.6115 | 0.6425 | 0.6296 | 0.5073 | 0.5348 | 0.5891 | 0.5841 | 0.3289
-iprec_at_recall_0.70 | 0.5937 | 0.6068 | 0.6196 | 0.6219 | 0.6115 | 0.6425 | 0.6296 | 0.5073 | 0.5348 | 0.5891 | 0.5841 | 0.3289
-iprec_at_recall_0.80 | 0.5914 | 0.6039 | 0.6175 | 0.619 | 0.6094 | 0.6401 | 0.627 | 0.5049 | 0.5333 | 0.5868 | 0.5838 | 0.3263
-iprec_at_recall_0.90 | 0.5914 | 0.6039 | 0.6175 | 0.619 | 0.6094 | 0.6401 | 0.627 | 0.5049 | 0.5333 | 0.5868 | 0.5838 | 0.3263
-iprec_at_recall_1.00 | 0.5914 | 0.6039 | 0.6175 | 0.619 | 0.6094 | 0.6401 | 0.627 | 0.5049 | 0.5333 | 0.5868 | 0.5838 | 0.3263
-P_5 | 0.1893 | 0.1951 | 0.1967 | 0.1975 | 0.1926 | 0.1967 | 0.1934 | 0.1704 | 0.1835 | 0.1852 | 0.1909 | 0.1473
-P_10 | 0.1107 | 0.1111 | 0.1119 | 0.114 | 0.1119 | 0.1156 | 0.1152 | 0.1095 | 0.1144 | 0.1115 | 0.1128 | 0.1033
-P_15 | 0.0774 | 0.0776 | 0.0787 | 0.0787 | 0.0774 | 0.079 | 0.0785 | 0.0787 | 0.0787 | 0.079 | 0.079 | 0.0749
-P_20 | 0.0595 | 0.0597 | 0.0597 | 0.0597 | 0.0591 | 0.0599 | 0.0591 | 0.0603 | 0.0601 | 0.0601 | 0.0601 | 0.0591
+map | 0.6016 | 0.6148 | 0.6285 | 0.6277 | 0.6199 | 0.6463 | 0.6354 | 0.5107 | 0.5394 | 0.6042 | 0.6257 | 0.3291
+gm_map | 0.4642 | 0.4816 | 0.4972 | 0.4968 | 0.4763 | 0.5071 | 0.4989 | 0.3753 | 0.4111 | 0.4784 | 0.4986 | 0.2455
+Rprec | 0.4318 | 0.4551 | 0.4709 | 0.4667 | 0.4715 | 0.5007 | 0.4801 | 0.3471 | 0.3512 | 0.416 | 0.4616 | 0.1156
+bpref | 0.4251 | 0.4457 | 0.4613 | 0.456 | 0.4642 | 0.4977 | 0.4795 | 0.3344 | 0.3469 | 0.4145 | 0.4569 | 0.1101
+recip_rank | 0.6147 | 0.628 | 0.6419 | 0.6373 | 0.6336 | 0.6546 | 0.6437 | 0.519 | 0.5473 | 0.6179 | 0.6405 | 0.3312
+iprec_at_recall_0.00 | 0.6194 | 0.6322 | 0.6469 | 0.6437 | 0.6375 | 0.6602 | 0.648 | 0.5242 | 0.5534 | 0.6224 | 0.6441 | 0.3396
+iprec_at_recall_0.10 | 0.6194 | 0.6322 | 0.6469 | 0.6437 | 0.6375 | 0.6602 | 0.648 | 0.5242 | 0.5534 | 0.6224 | 0.6441 | 0.3396
+iprec_at_recall_0.20 | 0.6194 | 0.6322 | 0.6469 | 0.6437 | 0.6375 | 0.6602 | 0.648 | 0.5242 | 0.5534 | 0.6224 | 0.6441 | 0.3396
+iprec_at_recall_0.30 | 0.6146 | 0.6269 | 0.6431 | 0.6401 | 0.6314 | 0.6572 | 0.648 | 0.5213 | 0.5515 | 0.6177 | 0.6393 | 0.3382
+iprec_at_recall_0.40 | 0.6125 | 0.6269 | 0.6404 | 0.6394 | 0.6293 | 0.6537 | 0.6458 | 0.5189 | 0.5488 | 0.614 | 0.6353 | 0.3382
+iprec_at_recall_0.50 | 0.6125 | 0.6269 | 0.6404 | 0.6394 | 0.6293 | 0.6537 | 0.6458 | 0.5189 | 0.5488 | 0.614 | 0.6353 | 0.3382
+iprec_at_recall_0.60 | 0.5937 | 0.6068 | 0.6196 | 0.6219 | 0.6115 | 0.6425 | 0.6296 | 0.5073 | 0.5348 | 0.5968 | 0.6167 | 0.3289
+iprec_at_recall_0.70 | 0.5937 | 0.6068 | 0.6196 | 0.6219 | 0.6115 | 0.6425 | 0.6296 | 0.5073 | 0.5348 | 0.5968 | 0.6167 | 0.3289
+iprec_at_recall_0.80 | 0.5914 | 0.6039 | 0.6175 | 0.619 | 0.6094 | 0.6401 | 0.627 | 0.5049 | 0.5333 | 0.594 | 0.6143 | 0.3263
+iprec_at_recall_0.90 | 0.5914 | 0.6039 | 0.6175 | 0.619 | 0.6094 | 0.6401 | 0.627 | 0.5049 | 0.5333 | 0.594 | 0.6143 | 0.3263
+iprec_at_recall_1.00 | 0.5914 | 0.6039 | 0.6175 | 0.619 | 0.6094 | 0.6401 | 0.627 | 0.5049 | 0.5333 | 0.594 | 0.6143 | 0.3263
+P_5 | 0.1893 | 0.1951 | 0.1967 | 0.1975 | 0.1926 | 0.1967 | 0.1934 | 0.1704 | 0.1835 | 0.1984 | 0.2008 | 0.1473
+P_10 | 0.1107 | 0.1111 | 0.1119 | 0.114 | 0.1119 | 0.1156 | 0.1152 | 0.1095 | 0.1144 | 0.1128 | 0.1136 | 0.1033
+P_15 | 0.0774 | 0.0776 | 0.0787 | 0.0787 | 0.0774 | 0.079 | 0.0785 | 0.0787 | 0.0787 | 0.0771 | 0.0779 | 0.0749
+P_20 | 0.0595 | 0.0597 | 0.0597 | 0.0597 | 0.0591 | 0.0599 | 0.0591 | 0.0603 | 0.0601 | 0.0599 | 0.0599 | 0.0591
 ndcg_cut_1 | 0.4403 | 0.4486 | 0.4691 | 0.4587 | 0.4774 | 0.0402 | 0.0402 | 0.0402 | 0.0402 | 0.0402 | 0.0402 | 0.0402
 ndcg_cut_3 | 0.5867 | 0.6077 | 0.6213 | 0.626 | 0.6033 | 0.0121 | 0.0121 | 0.0121 | 0.0121 | 0.0121 | 0.0121 | 0.0121
 ndcg_cut_5 | 0.6417 | 0.6598 | 0.6722 | 0.6743 | 0.6593 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006
 ndcg_cut_10 | 0.6825 | 0.693 | 0.7055 | 0.7102 | 0.6982 | 0.0024 | 0.0024 | 0.0024 | 0.0024 | 0.0024 | 0.0024 | 0.0024
 ndcg_cut_20 | 0.6993 | 0.7101 | 0.7208 | 0.7211 | 0.7115 | 0.0012 | 0.0012 | 0.0012 | 0.0012 | 0.0012 | 0.0012 | 0.0012
+
 
 
 ### Quora Duplicate Questions
@@ -666,7 +721,7 @@ ndcg_cut_20 | 0.6993 | 0.7101 | 0.7208 | 0.7211 | 0.7115 | 0.0012 | 0.0012 | 0.0
   | Accuracy
 -- | --
 MatchPyramid | 69.20%
-DRMM TKS | 67.05%
+DRMM TKS | 68.49%
 Word2Vec Baseline | 37.02%
 
 
@@ -675,17 +730,17 @@ Word2Vec Baseline | 37.02%
 
   | Accuracy
 -- | --
-MatchPyramid | 57.67%
+MatchPyramid | 56.82%
 MatchPyramid Random | 23%
-DTKS | 56.81%
+DTKS | 57.00%
 DTKS Random | 29%
 
 ### SNLI
 
   | Accuracy
 -- | --
-MatchPyramid | 53.49%
-DRMM_TKS | 51.2%
+MatchPyramid | 53.57%
+DRMM_TKS | 43.15%
 MatchPyramid Random | 33%
 DRMM_TKS Random | 33%
 
@@ -724,7 +779,6 @@ P_500 | 0.0029 | 0.0029 | 0.0029 | 0.0029 | 0.0029
 P_1000 | 0.0015 | 0.0014 | 0.0015 | 0.0015 | 0.0014
 
 
-
 #### DRMM_TKS
 
 
@@ -757,8 +811,6 @@ P_500 | 0.0029 | 0.0029 | 0.0029 | 0.0029 | 0.0029
 P_1000 | 0.0015 | 0.0014 | 0.0014 | 0.0015 | 0.0014
 
 
-
-
 ## 8. Notes on Finetuning Models
 Fine tuning deep learning models can be tough, considering the model runtimes and the number of parameters.  
 Here, I will list some parameters to consider while tuning:
@@ -778,6 +830,7 @@ While the models seem to be doing the best currently, they are a bit difficult t
 My time spent with understanding, developing and testing Neural Networks for Similarity Learning has brought out the conclusions that:
 - the current methods are not significantly better than a simple unsupervised word2vec baseline.
 - the current methods are unreproducible/difficult to reproduce.
+
 This work and effort has provided:
 - a method to evaluate models
 - implementations of some of the current SOTA models
