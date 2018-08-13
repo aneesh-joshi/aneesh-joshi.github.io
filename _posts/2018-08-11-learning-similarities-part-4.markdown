@@ -126,7 +126,7 @@ Mean (Over all the queries) Average Precision(Over all the docs for a query)
 
 Some psuedo code to describe the idea:
 
-```
+```python
 num_queries = len(queries)
 precision = 0
 for q, candidate_docs in zip(queries, docs):
@@ -322,7 +322,7 @@ I developed a table with my baselines as below:
 This is how I implement it:
 
 
-```
+```python
 def mapk(Y_true, Y_pred):
     """Calculates Mean Average Precision(MAP) for a given set of Y_true, Y_pred
 
@@ -369,7 +369,7 @@ def mapk(Y_true, Y_pred):
 
 This is how it's implemented in MatchZoo:
 
-```
+```python
 def map(y_true, y_pred, rel_threshold=0):
     s = 0.
     y_true = _to_list(np.squeeze(y_true).tolist())
@@ -409,7 +409,7 @@ This loss function is especially good for Ranking Problems. More details can be 
 
 Let's look at the keras definitions to get a better idea of the intuition
 
-```
+```python
 def hinge(y_true, y_pred):
     return K.mean(K.maximum(1. - y_true * y_pred, 0.), axis=-1)
 ```
@@ -417,7 +417,7 @@ def hinge(y_true, y_pred):
 In this case, the y_true can be {1, -1}
 For example, y_true = [1 , -1, 1] , y_pred = [0.6, 0.1, -0.9]
 
-```
+```python
 K.mean(K.maximum(1 - [1, -1, 1] * [0.6, 0.1, -0.9], 0))
 = K.mean(K.maximum(1 - [0.6, -0.1, -0.9], 0))
 = K.mean(K.maximum([0.4, 1.1, 1.9], 0))
@@ -425,7 +425,7 @@ K.mean(K.maximum(1 - [1, -1, 1] * [0.6, 0.1, -0.9], 0))
 ```
 Effectively, the more wrong answers contribute more to the loss
 
-```
+```python
 def categorical_hinge(y_true, y_pred):
     pos = K.sum(y_true * y_pred, axis=-1)
     neg = K.max((1.0 - y_true) * y_pred, axis=-1)
@@ -436,7 +436,7 @@ In this case, there is a categorization, so the true values are one hots
 For example, y_true = [[1, 0, 0], [0, 0, 1]], y_pred = [[0.8, 0.1, 0.1], [0.7, 0.2, 0.1]]
 
 
-```
+```python
 pos = K.sum([[1, 0, 0], [0, 0, 1]] * [[0.9, 0.1, 0.1], [0.7, 0.2, 0.1]], axis=-1)
     = K.sum([[0.9, 0, 0], [0, 0, 0.1]], axis=-1)  # check the predictions for the correct answer
     = [0.9, 0.1]
