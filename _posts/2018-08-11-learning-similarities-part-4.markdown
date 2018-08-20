@@ -561,6 +561,24 @@ Here, I will give examples of different datasets.
 More dataset info can be found at the [SentEval](https://github.com/facebookresearch/SentEval) repo.
 
 
+### Special note about InsuranceQA
+
+This dataset was originally released [here](https://github.com/shuzi/insuranceQA)  
+It has several different formats but at its base there is (for one data point):
+- a question
+- one or more correct answers
+- a pool of all answers (correct and incorrect)
+
+It doesn't have a simple format like question - document - relevance. So, we'll have to convert it to the QA format.
+That basically involves taking a question, its correct answer and marking it as relevant. Then for the remaining number of answers(however big you want the batch size to be), we pick (batch_size - current_size) from the pool of answers
+
+The original repo has several files and is *very* confusing.
+Luckily, there is a converted version of it [here](https://github.com/codekansas/insurance_qa_python)
+
+Since there is a pool of candidate answers from which a batch is sampled, the dataset becomes inherently stochastic.
+
+
+
 Links to Papers:
 - [SeqMatchSeq](https://arxiv.org/pdf/1611.01747.pdf)
 - [QA-Transfer](http://aclweb.org/anthology/P17-2081)
@@ -710,8 +728,14 @@ I got 0.64 on average (getting a 0.67 at one point) but this isn't more than Mat
 
 ## 7. Benchmarked Models
 
-### WikiQA
+In the tables below,  
+w2v/Glove Vec Averaging Baseline : refers to the score between 2 sentences calculated by averaging the word vectors(taken from [Glove of Pennington et al](https://nlp.stanford.edu/projects/glove/)) of their words and then taking the Cosine Similarity.
+FT : refers to the same as above but using [FastText](https://github.com/facebookresearch/fastText)
+Glove + Regression NN : refers to getting sentence representations in the same way as above but using a single layer neural network with softmax activation
+Glove + Multilayer NN : same as above but using a multilayer neural network instead of a single layer
 
+
+### WikiQA
 WikiQA test set | w2v 200 dim | FT 300 dim | MatchPyramid | DRMM_TKS | BiDAF only pretrain | BiDAF pretrain + finetune | MatchPyramid Untrained Model | DRMM_TKS Untrained Model | BiDAF Untrained Model
 -- | -- | -- | -- | -- | -- | -- | -- | -- | --
 map | 0.6285 | 0.6199 | **0.6463** | 0.6354 | 0.6042 | 0.6257 | 0.5107 | 0.5394 | 0.3291
@@ -727,7 +751,7 @@ iprec_at_recall_0.40 | 0.6404 | 0.6293 | **0.6537** | 0.6458 | 0.614 | 0.6353 | 
 iprec_at_recall_0.50 | 0.6404 | 0.6293 | **0.6537** | 0.6458 | 0.614 | 0.6353 | 0.5189 | 0.5488 | 0.3382
 iprec_at_recall_0.60 | 0.6196 | 0.6115 | **0.6425** | 0.6296 | 0.5968 | 0.6167 | 0.5073 | 0.5348 | 0.3289
 iprec_at_recall_0.70 | 0.6196 | 0.6115 | **0.6425** | 0.6296 | 0.5968 | 0.6167 | 0.5073 | 0.5348 | 0.3289
-iprec_at_recall_0.80 | 0.6175 | 0.6094 | 0.6401 | **0.627** | 0.594 | 0.6143 | 0.5049 | 0.5333 | 0.3263
+iprec_at_recall_1t_recall_0.80 | 0.6175 | 0.6094 | 0.6401 | **0.627** | 0.594 | 0.6143 | 0.5049 | 0.5333 | 0.3263
 iprec_at_recall_0.90 | 0.6175 | 0.6094 | 0.6401 | **0.627** | 0.594 | 0.6143 | 0.5049 | 0.5333 | 0.3263
 iprec_at_recall_1.00 | 0.6175 | 0.6094 | 0.6401 | **0.627** | 0.594 | 0.6143 | 0.5049 | 0.5333 | 0.3263
 P_5 | 0.1967 | 0.1926 | 0.1967 | 0.1934 | 0.1984 | **0.2008** | 0.1704 | 0.1835 | 0.1473
@@ -747,7 +771,9 @@ P_20 | 0.0597 | 0.0591 | 0.0599 | 0.0591 | 0.0599 | 0.0599 | **0.0603** | 0.0601
 -- | --
 MatchPyramid | 69.20%
 DRMM TKS | 68.49%
-Word2Vec Baseline | 37.02%
+Glove Vec Averaging Baseline | 37.02%
+Glove + Regression NN | 69.02%
+Glove + Multilayer NN | **78 %**
 
 
 
@@ -757,6 +783,8 @@ Word2Vec Baseline | 37.02%
 -- | --
 MatchPyramid | 56.82%
 DTKS | 57.00%
+Glove + Regression NN | 59.68%
+Glove + Multilayer NN | **66.18%**
 MatchPyramid Untrained Model | 23%
 DTKS Untrained Model | 29%
 
@@ -768,9 +796,13 @@ MatchPyramid | 53.57%
 DRMM_TKS | 43.15%
 MatchPyramid Untrained Model| 33%
 DRMM_TKS Untrained Model | 33%
+Glove + Regression NN | 58.60%
+Glove + Multilayer NN | **73.06%**
 
 
 ### InsuranceQA
+
+Note: InsuranceQA is a "different dataset". It has a question, with one or two correct answers along with a pool of almost 500 incorrect answers. The InsuranceQA reader will, for a question randomly sample some incorrect answers to include in a batch. The dataset has been provided with 2 test sets (Test1 and Test2)
 
 #### Test1 set
 
